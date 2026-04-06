@@ -26,7 +26,23 @@ public class AuthServiceImplementation implements AuthService {
     @Override
     public User register(User user){
         user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
+        user.setUserRole("ROLE_USER");
         return userRepository.save(user);
+    }
+
+    @Override
+    public User editUser(Integer userId, User updatedUser){
+        User existing = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        existing.setUserName((updatedUser.getUserName()));
+        existing.setUserEmail(updatedUser.getUserEmail());
+
+        if(updatedUser.getUserPassword() != null && !updatedUser.getUserPassword().isBlank()){
+            existing.setUserPassword(passwordEncoder.encode(updatedUser.getUserPassword()));
+        }
+
+        return userRepository.save(existing);
     }
 
     @Override
@@ -38,7 +54,7 @@ public class AuthServiceImplementation implements AuthService {
             throw new RuntimeException("Invalid credential");
         }
 
-        String token = jwtUtil.generateToken(user.getUserEmail());
+        String token = jwtUtil.generateToken(user.getUserEmail(),user.getUserRole());
         return new LoginResponseDTO(token);
     }
 }

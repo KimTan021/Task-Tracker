@@ -7,4 +7,5 @@ import com.vertere.tasktracker.entity.User;
 public interface AuthService {
     User register(User user);
     LoginResponseDTO login(LoginRequestDTO request);
+    User editUser(Integer userId, User updatedUser);
 }
