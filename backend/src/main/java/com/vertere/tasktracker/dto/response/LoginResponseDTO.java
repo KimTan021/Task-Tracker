@@ -1,10 +1,18 @@
 package com.vertere.tasktracker.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class LoginResponseDTO {
-    private String token;
+    private final String token;
+    private final Integer userId;
+    private final String userName;
+    private final String userEmail;
+
+    public LoginResponseDTO(String token, Integer userId, String userName, String userEmail) {
+        this.token = token;
+        this.userId = userId;
+        this.userName = userName;
+        this.userEmail = userEmail;
+    }
 }

@@ -31,11 +31,24 @@ public class JwtFilter extends OncePerRequestFilter {
         if(authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             if(jwtUtil.isTokenValid(token)){
-                String email = jwtUtil.extractEmail(token);
+                String username = jwtUtil.extractUsername(token);
+                // Final Fix: Add a default authority required by some Spring configurations
+                java.util.List<org.springframework.security.core.GrantedAuthority> authorities = 
+                    java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_USER"));
+                
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(email, null, List.of());
+                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                
+                // Final Fix: Populate authentication details
+                authentication.setDetails(new org.springframework.security.web.authentication.WebAuthenticationDetailsSource().buildDetails(request));
+                
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                response.setHeader("X-Auth-Status", "Authenticated");
+            } else {
+                response.setHeader("X-Auth-Status", "Invalid_Token");
             }
+        } else if (authHeader != null) {
+            response.setHeader("X-Auth-Status", "Malformed_Bearer");
         }
 
         filterChain.doFilter(request,response);

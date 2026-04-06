@@ -35,6 +35,13 @@ public class UserServiceImplementation implements UserService {
         userRepository.deleteById(userId);
     }
 
+    @Override
+    public java.util.List<User> searchByUsername(String query) {
+        return userRepository.findByUserNameContainingIgnoreCase(query);
+    }
 
-
+    @Override
+    public java.util.Optional<User> findByUsername(String username) {
+        return userRepository.findByUserName(username);
+    }
 }

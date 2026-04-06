@@ -9,4 +9,6 @@ public interface UserService {
     public User findUserById(Integer userId);
     public User saveUser(User user);
     public void deleteUserById(Integer userId);
+    java.util.List<User> searchByUsername(String query);
+    java.util.Optional<User> findByUsername(String username);
 }

@@ -11,26 +11,26 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret:aB3dEfGhIjKlMnOpQrStUvWxYz012345}")
     private String secret;
 
-    @Value(("${jwt.expiration}"))
+    @Value("${jwt.expiration:3600000}")
     private long expiration;
 
     private SecretKey getSigningKey(){
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String email){
+    public String generateToken(String username){
         return Jwts.builder()
-                .subject(email)
+                .subject(username)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String extractEmail(String token){
+    public String extractUsername(String token){
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -41,7 +41,7 @@ public class JwtUtil {
 
     public boolean isTokenValid(String token){
         try{
-            extractEmail(token);
+            extractUsername(token);
             return true;
         } catch (Exception e) {
             return false;

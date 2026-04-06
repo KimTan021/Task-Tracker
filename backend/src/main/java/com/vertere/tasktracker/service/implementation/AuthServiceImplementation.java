@@ -25,20 +25,29 @@ public class AuthServiceImplementation implements AuthService {
 
     @Override
     public User register(User user){
-        user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
+        // Final Fix: Sanitize input to avoid trailing spaces
+        if (user.getUserName() != null) user.setUserName(user.getUserName().trim());
+        if (user.getUserPassword() != null) {
+            String encoded = passwordEncoder.encode(user.getUserPassword().trim());
+            user.setUserPassword(encoded);
+        }
         return userRepository.save(user);
     }
 
     @Override
     public LoginResponseDTO login(LoginRequestDTO request) {
-        User user = userRepository.findByUserEmail(request.getUserEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        // Final Fix: Sanitize input to avoid trailing spaces
+        String username = request.getUserName() != null ? request.getUserName().trim() : "";
+        String password = request.getUserPassword() != null ? request.getUserPassword().trim() : "";
 
-        if(!passwordEncoder.matches(request.getUserPassword(), user.getUserPassword())){
-            throw new RuntimeException("Invalid credential");
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not found"));
+
+        if(!passwordEncoder.matches(password, user.getUserPassword())){
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Invalid credential");
         }
 
         String token = jwtUtil.generateToken(user.getUserEmail());
-        return new LoginResponseDTO(token);
+        return new LoginResponseDTO(token, user.getUserId(), user.getUserName(), user.getUserEmail());
     }
 }

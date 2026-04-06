@@ -28,8 +28,53 @@ public class Task {
     private String taskDescription;
 
     @Column(name = "task_status", nullable = false)
-    private Boolean taskStatus;
+    private String taskStatus;
 
     @Column(name = "task_date_due", nullable = true)
     private LocalDateTime taskDateDue;
+
+    @Column(name = "task_start_date", nullable = true)
+    private LocalDateTime taskStartDate;
+
+    @Column(name = "task_priority", nullable = true)
+    private String taskPriority;
+
+    @Column(name = "task_tags", nullable = true)
+    private String taskTags;
+
+    @Column(name = "assignee_name", nullable = true)
+    private String assigneeName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
+
+    @Column(name = "archived", nullable = false)
+    private Boolean archived = false;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = now;
+        }
+        updatedAt = now;
+        if (archived == null) {
+            archived = false;
+        }
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = LocalDateTime.now();
+        if (archived == null) {
+            archived = false;
+        }
+    }
 }

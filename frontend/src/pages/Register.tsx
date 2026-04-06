@@ -1,24 +1,36 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { useAuthStore } from '../hooks/useAuthStore';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
-import { User, Lock, ArrowRight, Rocket, Shield, Cpu, AlertCircle } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Rocket, Shield, Cpu, AlertCircle, User } from 'lucide-react';
 
-export const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
+export const Register: React.FC = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [localError, setLocalError] = useState<string | null>(null);
+  
+  const { register, isLoading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !password) return;
+    setLocalError(null);
+    clearError();
+
+    if (!name || !email || !password || !confirmPassword) return;
+    
+    if (password !== confirmPassword) {
+      setLocalError("Passwords do not match");
+      return;
+    }
     
     try {
-      await login(username, password);
-      navigate('/board');
+      await register(name, email, password);
+      // Pass a state message to the login page
+      navigate('/login', { state: { message: "Registration successful. Please log in." } });
     } catch (err) {
       // Error is handled in the store, just prevent navigation
     }
@@ -26,8 +38,11 @@ export const Login: React.FC = () => {
 
   const handleInputChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
     if (error) clearError();
+    if (localError) setLocalError(null);
     setter(e.target.value);
   };
+
+  const displayError = localError || error;
 
   return (
     <main className="min-h-screen w-full flex bg-[var(--color-surface)] selection:bg-[var(--color-primary)] selection:text-white">
@@ -57,7 +72,7 @@ export const Login: React.FC = () => {
           </h1>
           
           <p className="text-xl leading-relaxed font-light mb-12 max-w-lg text-[#c3c0ff] opacity-90">
-            Experience a workspace that feels like a high-end physical studio. Curated for teams that demand excellence.
+            Join a workspace that feels like a high-end physical studio. Curated for teams that demand excellence.
           </p>
           
           <div className="bg-white/5 backdrop-blur-2xl p-8 rounded-2xl shadow-[0_40px_80px_rgba(0,0,0,0.15)] border border-white/10 relative group overflow-hidden">
@@ -100,7 +115,7 @@ export const Login: React.FC = () => {
         </div>
       </section>
 
-      {/* Right Section: Login Area */}
+      {/* Right Section: Registration Area */}
       <section className="w-full lg:w-[45%] bg-[var(--color-surface-container-lowest)] flex items-center justify-center p-8 md:p-16 relative">
         <div className="w-full max-w-md animate-fade-in-up delay-200">
           {/* Mobile Branding */}
@@ -111,12 +126,12 @@ export const Login: React.FC = () => {
             <span className="font-display font-extrabold text-2xl tracking-tighter text-[var(--color-on-surface)]">Nexus Flow</span>
           </div>
 
-          <div className="mb-12">
-            <h2 className="font-display font-extrabold text-[2.25rem] md:text-[3.5rem] leading-[1.1] text-[var(--color-on-surface)] mb-3 md:mb-4 tracking-tighter">Sign In.</h2>
-            <p className="text-[var(--color-on-surface-variant)] text-base md:text-lg font-medium opacity-80">Welcome back to the studio. <br className="hidden md:block"/>Your workspace awaits.</p>
+          <div className="mb-10">
+            <h2 className="font-display font-extrabold text-[2.25rem] md:text-[3.5rem] leading-[1.1] text-[var(--color-on-surface)] mb-3 md:mb-4 tracking-tighter">Request Access.</h2>
+            <p className="text-[var(--color-on-surface-variant)] text-base md:text-lg font-medium opacity-80">Join the studio. <br className="hidden md:block"/>Create your workspace.</p>
           </div>
 
-          <form className="space-y-8" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="transform transition-all duration-500 hover:translate-x-1">
               <Input 
                 label="Username" 
@@ -124,17 +139,29 @@ export const Login: React.FC = () => {
                 placeholder="architect_01" 
                 icon={<User className="w-[18px] h-[18px] opacity-70" />}
                 required
-                value={username}
-                onChange={handleInputChange(setUsername)}
+                value={name}
+                onChange={handleInputChange(setName)}
+              />
+              <p className="mt-2 text-[10px] font-bold text-[var(--color-on-surface-variant)]/40 uppercase tracking-widest pl-1">
+                This will be your unique architectural handle.
+              </p>
+            </div>
+
+            <div className="transform transition-all duration-500 hover:translate-x-1 delay-75">
+              <Input 
+                label="Email Address" 
+                type="email" 
+                placeholder="name@nexus.io" 
+                icon={<Mail className="w-[18px] h-[18px] opacity-70" />}
+                required
+                value={email}
+                onChange={handleInputChange(setEmail)}
               />
             </div>
             
-            <div className="space-y-3 transform transition-all duration-500 hover:translate-x-1 delay-100">
-              <div className="flex justify-between items-end">
-                <label className="block text-label-sm font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Password</label>
-                <a className="text-label-sm font-bold text-[var(--color-primary)] uppercase tracking-widest hover:text-[var(--color-primary-container)] transition-colors" href="#">Forgot password?</a>
-              </div>
+            <div className="transform transition-all duration-500 hover:translate-x-1 delay-100">
               <Input 
+                label="Password"
                 type="password" 
                 placeholder="••••••••" 
                 icon={<Lock className="w-[18px] h-[18px] opacity-70" />}
@@ -144,86 +171,45 @@ export const Login: React.FC = () => {
               />
             </div>
 
-            {error && (
-              <div className="flex items-center gap-2 text-rose-500 text-sm font-semibold bg-rose-50 p-3 rounded-lg border border-rose-100 animate-fade-in-up">
-                <AlertCircle className="w-4 h-4" />
-                <span>{error}</span>
-              </div>
-            )}
-            
-            {((location.state as any)?.message) && !error && (
-              <div className="flex items-center gap-2 text-emerald-600 text-sm font-semibold bg-emerald-50 p-3 rounded-lg border border-emerald-100 animate-fade-in-up">
-                <Shield className="w-4 h-4" />
-                <span>{(location.state as any).message}</span>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pb-2">
-              <div className="flex items-center space-x-3 group cursor-pointer">
-                <div className="relative flex items-center">
-                  <input 
-                    className="peer w-5 h-5 opacity-0 absolute cursor-pointer" 
-                    id="remember" 
-                    type="checkbox"
-                  />
-                  <div className="w-5 h-5 border-2 border-[var(--color-outline-variant)] rounded-md bg-[var(--color-surface-container-low)] peer-checked:bg-[var(--color-primary)] peer-checked:border-[var(--color-primary)] transition-all duration-300">
-                     <svg className="w-full h-full text-white scale-0 peer-checked:scale-100 transition-transform duration-300 p-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                     </svg>
-                  </div>
-                </div>
-                <label className="text-sm text-[var(--color-on-surface-variant)] font-semibold cursor-pointer group-hover:text-[var(--color-on-surface)] transition-colors" htmlFor="remember">
-                  Authenticated session
-                </label>
-              </div>
+            <div className="transform transition-all duration-500 hover:translate-x-1 delay-150">
+              <Input 
+                label="Confirm Password"
+                type="password" 
+                placeholder="••••••••" 
+                icon={<Lock className="w-[18px] h-[18px] opacity-70" />}
+                required 
+                value={confirmPassword}
+                onChange={handleInputChange(setConfirmPassword)}
+              />
             </div>
 
-            <Button disabled={isLoading} variant="primary" className="w-full py-5 group relative overflow-hidden shadow-[0_20px_40px_rgba(53,37,205,0.2)]" type="submit">
+            {displayError && (
+              <div className="flex items-center gap-2 text-rose-500 text-sm font-semibold bg-rose-50 p-3 rounded-lg border border-rose-100 animate-fade-in-up">
+                <AlertCircle className="w-4 h-4" />
+                <span>{displayError}</span>
+              </div>
+            )}
+
+            <Button disabled={isLoading} variant="primary" className="w-full py-5 group relative overflow-hidden shadow-[0_20px_40px_rgba(53,37,205,0.2)] mt-8" type="submit">
               <span className="relative z-10 flex items-center text-lg font-bold">
-                {isLoading ? 'Authenticating...' : 'Enter Workspace'}
+                {isLoading ? 'Creating Account...' : 'Initialize Workspace'}
                 {!isLoading && <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1.5 transition-transform duration-300" />}
               </span>
               <div className="absolute inset-0 bg-white/10 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
             </Button>
             
             <div className="text-center mt-6">
-                <span className="text-[var(--color-on-surface-variant)] text-sm font-medium">Don't have an account? </span>
-                <Link to="/register" className="text-[var(--color-primary)] text-sm font-bold hover:text-[var(--color-primary-container)] transition-colors inline-block hover:-translate-y-0.5 duration-300">
-                    Request Access
+                <span className="text-[var(--color-on-surface-variant)] text-sm font-medium">Already have an account? </span>
+                <Link to="/login" className="text-[var(--color-primary)] text-sm font-bold hover:text-[var(--color-primary-container)] transition-colors inline-block hover:-translate-y-0.5 duration-300">
+                    Sign In
                 </Link>
             </div>
           </form>
 
-          <div className="relative my-12">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[var(--color-outline-variant)]/50"></div>
-            </div>
-            <div className="relative flex justify-center text-label-sm uppercase tracking-[0.2em] font-bold">
-              <span className="bg-[var(--color-surface-container-lowest)] px-6 text-[var(--color-on-surface-variant)]">Gateway protocols</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <button className="flex items-center justify-center space-x-3 py-4 px-4 bg-[var(--color-surface-container-low)] hover:bg-[var(--color-surface-container-highest)] text-[var(--color-on-surface)] font-display font-bold border border-transparent hover:border-[var(--color-outline-variant)] rounded-xl transition-all duration-300 group">
-              <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.65l-3.57-2.77c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" fill="#EA4335"></path>
-              </svg>
-              <span>Google SSO</span>
-            </button>
-            <button className="flex items-center justify-center space-x-3 py-4 px-4 bg-[var(--color-surface-container-low)] hover:bg-[var(--color-surface-container-highest)] text-[var(--color-on-surface)] font-display font-bold border border-transparent hover:border-[var(--color-outline-variant)] rounded-xl transition-all duration-300 group">
-              <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path>
-              </svg>
-              <span>GitHub Key</span>
-            </button>
-          </div>
         </div>
 
         {/* Footer info absolute to right section */}
-        <footer className="absolute bottom-6 md:bottom-10 w-full hidden md:flex justify-center space-x-12 px-8 animate-fade-in-up delay-500 opacity-0">
+        <footer className="absolute bottom-6 md:bottom-10 w-full hidden md:flex justify-center space-x-12 px-8 animate-fade-in-up delay-[600ms] opacity-0" style={{ animationFillMode: 'forwards' }}>
           <div className="flex items-center space-x-10">
             {['Privacy', 'Protocol', 'Security'].map((text) => (
               <span key={text} className="text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] cursor-pointer transition-all hover:tracking-[0.4em] duration-300">
