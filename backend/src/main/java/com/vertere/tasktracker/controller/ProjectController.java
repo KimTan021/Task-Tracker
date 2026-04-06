@@ -1,7 +1,7 @@
 package com.vertere.tasktracker.controller;
 
-import com.task_tracker.task.service.entity.Project;
-import com.task_tracker.task.service.service.ProjectService;
+import com.vertere.tasktracker.entity.Project;
+import com.vertere.tasktracker.service.ProjectService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

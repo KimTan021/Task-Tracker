@@ -1,6 +1,6 @@
 package com.vertere.tasktracker.repository;
 
-import com.task_tracker.task.service.entity.User;
+import com.vertere.tasktracker.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package com.vertere.tasktracker.service;
 
-import com.task_tracker.task.service.entity.Project;
+import com.vertere.tasktracker.entity.Project;
 
 import java.util.List;
 

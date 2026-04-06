@@ -1,11 +1,11 @@
-package com.task_tracker.task.service.service.implementation;
+package com.vertere.tasktracker.service.implementation;
 
-import com.task_tracker.task.service.dto.request.LoginRequestDTO;
-import com.task_tracker.task.service.dto.response.LoginResponseDTO;
-import com.task_tracker.task.service.entity.User;
-import com.task_tracker.task.service.repository.UserRepository;
-import com.task_tracker.task.service.security.JwtUtil;
-import com.task_tracker.task.service.service.AuthService;
+import com.vertere.tasktracker.dto.request.LoginRequestDTO;
+import com.vertere.tasktracker.dto.response.LoginResponseDTO;
+import com.vertere.tasktracker.entity.User;
+import com.vertere.tasktracker.repository.UserRepository;
+import com.vertere.tasktracker.security.JwtUtil;
+import com.vertere.tasktracker.service.AuthService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

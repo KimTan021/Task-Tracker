@@ -1,8 +1,8 @@
-package com.task_tracker.task.service.service.implementation;
+package com.vertere.tasktracker.service.implementation;
 
-import com.task_tracker.task.service.entity.Project;
-import com.task_tracker.task.service.repository.ProjectRepository;
-import com.task_tracker.task.service.service.ProjectService;
+import com.vertere.tasktracker.entity.Project;
+import com.vertere.tasktracker.repository.ProjectRepository;
+import com.vertere.tasktracker.service.ProjectService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
