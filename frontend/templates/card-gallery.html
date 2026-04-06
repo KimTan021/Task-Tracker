@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "tertiary-fixed": "#ffdbcc",
+                        "secondary-fixed": "#e2dfff",
+                        "background": "#fcf9f8",
+                        "surface-container-highest": "#e5e2e1",
+                        "primary": "#3525cd",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#c3c0ff",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-tertiary-fixed": "#351000",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "surface-tint": "#4d44e3",
+                        "secondary": "#58579b",
+                        "outline": "#777587",
+                        "on-secondary-fixed-variant": "#413f82",
+                        "on-background": "#1c1b1b",
+                        "surface-variant": "#e5e2e1",
+                        "on-surface": "#1c1b1b",
+                        "secondary-container": "#b6b4ff",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface": "#fcf9f8",
+                        "surface-bright": "#fcf9f8",
+                        "tertiary": "#7e3000",
+                        "on-primary-fixed": "#0f0069",
+                        "outline-variant": "#c7c4d8",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-surface-variant": "#464555",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#454386",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "primary-fixed": "#e2dfff",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-secondary-fixed": "#140f54",
+                        "surface-container": "#f0edec",
+                        "primary-container": "#4f46e5",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "surface-container-high": "#ebe7e7",
+                        "tertiary-container": "#a44100",
+                        "on-primary-container": "#dad7ff",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#c3c0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-nav {
+            background: rgba(229, 226, 225, 0.7);
+            backdrop-filter: blur(24px);
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #3525cd 0%, #4f46e5 100%);
+        }
+        .ghost-border {
+            outline: 1px solid rgba(199, 196, 216, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-40 flex justify-between items-center px-6 h-16 bg-[#fcf9f8] dark:bg-stone-950">
+    <div class="flex items-center gap-8">
+        <span class="text-xl font-extrabold tracking-tight text-[#1c1b1b] dark:text-stone-100 font-['Manrope']">Nexus Flow</span>
+        <nav class="hidden md:flex items-center gap-6 font-['Manrope'] font-semibold text-sm">
+            <a class="text-[#3525cd] dark:text-[#4f46e5] font-bold border-b-2 border-[#3525cd] py-5" href="#">Projects</a>
+            <a class="text-stone-500 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-colors px-2 py-1 rounded" href="#">Tasks</a>
+            <a class="text-stone-500 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-colors px-2 py-1 rounded" href="#">Team</a>
+            <a class="text-stone-500 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-colors px-2 py-1 rounded" href="#">Settings</a>
+        </nav>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="relative hidden sm:block">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+            <input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-1.5 text-sm focus:ring-2 focus:ring-primary/20 w-64 transition-all" placeholder="Search assets..." type="text"/>
+        </div>
+        <button class="p-2 text-on-surface-variant hover:bg-stone-200/50 rounded-full transition-colors">
+            <span class="material-symbols-outlined">notifications</span>
+        </button>
+        <button class="p-2 text-on-surface-variant hover:bg-stone-200/50 rounded-full transition-colors">
+            <span class="material-symbols-outlined">group</span>
+        </button>
+        <img alt="User profile avatar" class="w-8 h-8 rounded-full object-cover" data-alt="Close-up portrait of a professional woman with a friendly expression in a modern office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2gDuPyKWdDOnQ41pFMc0oZ3ouyBh7ivyquLnuI9155fZ0xUKaKFuy_BkmQ6Umi05dLm1H4DccFrImKaMJMF4dYlEzqLTEnyULEQnNuz9ucCPih9rMN5DSaPGOM23j_7LMUY4YHJ8fieFKgWsyj_W-KU3GO71PXPKQna-9OQXCH02G9PcQjuGMJPrX9S3s4M3YD-LDjYbAcm8NOM5BpAmKC6-jJbQtxM_XsCKO-CnEcy3ieWHTGV7S473RJ9JKvfv9K1EeKzYinIc"/>
+    </div>
+</header>
+<!-- SideNavBar (Desktop Only) -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#f6f3f2] dark:bg-stone-900 hidden md:flex flex-col p-4 space-y-2 pt-20 z-30">
+    <div class="px-4 mb-6">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 signature-gradient rounded-xl flex items-center justify-center text-white">
+                <span class="material-symbols-outlined">grid_view</span>
+            </div>
+            <div>
+                <h2 class="text-lg font-bold text-[#1c1b1b] dark:text-white font-headline leading-tight">Kinetic Monolith</h2>
+                <p class="text-xs text-stone-500 dark:text-stone-400 uppercase tracking-widest font-semibold">Design Studio</p>
+            </div>
+        </div>
+    </div>
+    <button class="signature-gradient text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition-all active:scale-[0.98]">
+        <span class="material-symbols-outlined">add</span>
+        <span>New Project</span>
+    </button>
+    <nav class="flex-1 space-y-1 font-['Inter'] text-sm">
+        <a class="flex items-center gap-3 px-4 py-3 text-[#1c1b1b] dark:text-white font-bold bg-[#ffffff] dark:bg-stone-800 rounded-lg translate-x-1 duration-200" href="#">
+            <span class="material-symbols-outlined">grid_view</span>
+            <span>Projects</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 text-stone-500 dark:text-stone-400 hover:bg-[#e5e2e1] dark:hover:bg-stone-800 transition-all rounded-lg" href="#">
+            <span class="material-symbols-outlined">assignment</span>
+            <span>Tasks</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 text-stone-500 dark:text-stone-400 hover:bg-[#e5e2e1] dark:hover:bg-stone-800 transition-all rounded-lg" href="#">
+            <span class="material-symbols-outlined">group</span>
+            <span>Team</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 text-stone-500 dark:text-stone-400 hover:bg-[#e5e2e1] dark:hover:bg-stone-800 transition-all rounded-lg" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+        </a>
+    </nav>
+    <div class="pt-4 border-t border-stone-200/50 space-y-1">
+        <a class="flex items-center gap-3 px-4 py-2 text-stone-500 dark:text-stone-400 hover:bg-[#e5e2e1] rounded-lg transition-all text-xs" href="#">
+            <span class="material-symbols-outlined text-sm">help</span>
+            <span>Help</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-2 text-stone-500 dark:text-stone-400 hover:bg-[#e5e2e1] rounded-lg transition-all text-xs" href="#">
+            <span class="material-symbols-outlined text-sm">archive</span>
+            <span>Archive</span>
+        </a>
+    </div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:pl-64 pt-16 min-h-screen">
+    <div class="max-w-[1400px] mx-auto p-6 md:p-10">
+        <!-- Header & Filter Section -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight font-headline mb-2 text-on-surface">Asset Gallery</h1>
+                <p class="text-on-surface-variant font-medium">Review and manage your studio's visual design library.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex bg-surface-container-low p-1 rounded-lg">
+                    <button class="bg-surface-container-lowest text-primary px-4 py-2 rounded-md shadow-sm text-sm font-semibold flex items-center gap-2 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">grid_view</span>
+                        Grid
+                    </button>
+                    <button class="text-on-surface-variant px-4 py-2 rounded-md text-sm font-medium flex items-center gap-2 hover:bg-stone-200/50 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">list</span>
+                        List
+                    </button>
+                </div>
+                <div class="h-8 w-[1px] bg-stone-200 mx-2 hidden sm:block"></div>
+                <div class="flex items-center gap-2">
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Sort by:</label>
+                    <select class="bg-surface-container-low border-none text-sm font-semibold rounded-lg focus:ring-0 cursor-pointer pr-8 hover:bg-surface-container-high transition-colors">
+                        <option>Recently Added</option>
+                        <option>Alphabetical</option>
+                        <option>File Size</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Filter:</label>
+                    <select class="bg-surface-container-low border-none text-sm font-semibold rounded-lg focus:ring-0 cursor-pointer pr-8 hover:bg-surface-container-high transition-colors">
+                        <option>Asset Type</option>
+                        <option>Figma</option>
+                        <option>Images</option>
+                        <option>PDFs</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!-- Bento/Grid Gallery -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <!-- Card 1 -->
+            <div class="group bg-surface-container-lowest rounded-xl overflow-hidden ghost-border hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-all duration-300 flex flex-col">
+                <div class="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
+                    <img alt="Brand identity guidelines" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Minimalist graphic design layout showing typography and color palettes on a clean workspace desk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0uU-nL5-vqOz6JAePiW-S2STanCFqIGvQg5yMe5mC6ZxtFZkuAusRDT3rFdbzYTw8mSouSbVvqn2pZG0lhHld_x-FNrJvb2mjj71nMcyAI4PooRmjA-nlqDSuDST2OepC4jCL1sKthKAt7IMQmNFm3RRQXPntNp-Fk9ho1aqARzqgz7yEvlBiO2W43ccl_M26_YvEr-gbKItku3dry0FT-M2ewecbZQQdYW4ATCxbpVzr4QbXHyo2No9sL722R5qzHNLbcmybJ24"/>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded tracking-wider uppercase">Approved</span>
+                    </div>
+                    <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-on-surface shadow-lg">
+                            <span class="material-symbols-outlined">download</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-bold text-on-surface text-lg leading-tight mb-1">Brand Identity v2.1</h3>
+                            <p class="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">PDF Asset</p>
+                        </div>
+                        <span class="text-xs font-bold bg-surface-container-high px-2 py-1 rounded">24.5 MB</span>
+                    </div>
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-surface-container-low">
+                        <div class="flex -space-x-2">
+                            <div class="w-7 h-7 rounded-full border-2 border-white overflow-hidden" title="Alex viewed">
+                                <img class="w-full h-full object-cover" data-alt="Professional headshot of a man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8I-2jRdC-SJP6Qd4n9xTpSCUwTQ3NDlX62N66MtbLMdF8XWcr63f-dWk79hrYpc8WQqPKtkUiwh0-T9I2ib0b0xzJ2_NCD8iHDPdQqtw6sCuFNyrVqne--COBJNTgWSke964FEI5g36YbNZEbEr4fylLg-7dmvwC8XsIJ3NK_Kt1ChaF74aaGj4JGCtw7ktey3AXNqtw_hOwMTqbsxBpGusQdD5TrMBhGaiGL6kW0s-CkoqRrn4ea8uOKHWgo8hKUpiXr4EZLvCI"/>
+                            </div>
+                            <div class="w-7 h-7 rounded-full border-2 border-white overflow-hidden" title="Sarah commented">
+                                <img class="w-full h-full object-cover" data-alt="Portrait of a woman smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCF4FhmqMJgqKOK1aKqtlynuE1pIWorv4b4lOg9gm4iE8Z3eoLI5GFa-QTp0D6pHkqkAcAqfYNTOTgE-rQPj2yiii5s1HlH5LLxV-Z-h9Z65PCGulTFCT9EulvxbqrwPcF-lH9i0tIcSfGoFL2KcAuENVBUqX_F12Uu1pEtSa3_6_2WuhUV-NH8BKGzrenvhd-DyYTAYOU3X2BAa31zhaUb4_FZth2kEBkqhPKD15t9XUKCrhHNG9zbaakO4iRI0dwzIe4NAhyg-1o"/>
+                            </div>
+                            <div class="w-7 h-7 rounded-full border-2 border-white bg-surface-container-highest flex items-center justify-center text-[10px] font-bold text-on-surface-variant">
+                                +3
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-primary text-[10px] font-bold uppercase tracking-wider">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_#3525cd]"></span>
+                            Commented
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="group bg-surface-container-lowest rounded-xl overflow-hidden ghost-border hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-all duration-300 flex flex-col">
+                <div class="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
+                    <img alt="Mobile App Prototype" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Abstract colorful fluid background with vibrant purples and pinks, high resolution digital render" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkr96DNeZspdZmDPkgQ9Ws5fJFtpYMZpU5P-Lewo7UKcKUI4Dkkiq9PomL02ITWDUlC8XM3LgNoi8kYwiTyWtcgc5as9-4aR-m2QCxJrQucbNC_lhGx-pUeK1mI8GeDxonFT-UN5b5ZNsFWJEzXHk5b4HDk5X9qYNC-25UTMzNiR_1lXvZfW3q2E61jq9hHnoDQPQ0B7g7Ax_6HcD8oqyYWkIroJV1ZkVjidEenhkpeQo7wi0BvZoCvCOUy698DryQuMkIn-E5CY8"/>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-secondary text-white text-[10px] font-bold px-2 py-1 rounded tracking-wider uppercase">Pending Review</span>
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-bold text-on-surface text-lg leading-tight mb-1">Onboarding Flow</h3>
+                            <p class="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">FIG File</p>
+                        </div>
+                        <span class="text-xs font-bold bg-surface-container-high px-2 py-1 rounded">Figma</span>
+                    </div>
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-surface-container-low">
+                        <div class="flex -space-x-2">
+                            <div class="w-7 h-7 rounded-full border-2 border-white overflow-hidden">
+                                <img class="w-full h-full object-cover" data-alt="Man with a beard looking forward" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARit88N4J76SZVUCmpb2Hatc3MEyZDefxy_Ej4qD7pHbb0_Ta8fwdUJrP9grQj9flRfe6VZl8F0CVLvvajdxwp5k8ssBw09-dUSs7ZSBifKjnP0Lzl5vhwdnHocvm4i23iN--NA_hI4YTQoUjYODnY9hAof_rXjF9_H-LzkEZzWq_IpyExPzRKLb6-2mHBYIfsCLHtKzhrpWrVbqQ00RKsh0fGFVY9slyTF77ostb_vlzDVCTNHvt0Z3JgCKk7_w3u5K-_-UXoPrs"/>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-on-surface-variant text-[10px] font-bold uppercase tracking-wider">
+                            Viewed
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="group bg-surface-container-lowest rounded-xl overflow-hidden ghost-border hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-all duration-300 flex flex-col">
+                <div class="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
+                    <img alt="Social Media Pack" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A collection of clean, modern social media templates displayed on a screen with soft shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCT6p_6W4Tac1_LjarIArttLN4i6aeMtmBHgXo39oHsmYROaw2fuOeS3x_ro16fkEW8tNMg_GNLUPOo9ZS72kbllOdk2SGbfdhm-0EKg_hJCEb_5IbzB6t2YvBw29M_vTPpsh7jFqJmvl_ZSA6R7kAXF_CYIm9ldappj8NZTmmpovIojhCzbCzQdAajOcmegqcoBqPW6xQL9cIhFfMUNupE9dKa5WSp2gUmHTwRLczGPY1aHOcQ8NssirWaP5ITUNxwj9bmyYM6hqU"/>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded tracking-wider uppercase">Approved</span>
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-bold text-on-surface text-lg leading-tight mb-1">Summer Campaign</h3>
+                            <p class="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">PNG Pack</p>
+                        </div>
+                        <span class="text-xs font-bold bg-surface-container-high px-2 py-1 rounded">128 MB</span>
+                    </div>
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-surface-container-low">
+                        <div class="flex -space-x-2">
+                            <div class="w-7 h-7 rounded-full border-2 border-white overflow-hidden">
+                                <img class="w-full h-full object-cover" data-alt="Woman with curly hair smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI35wZ1XtBZ2TaD0TSH50xy-RyGGwH_8xzH9u0do_0habse7-anShxzsrrv4hfcaEbUGmf3LtdSGWtGjE4hNZ0nQ_1FXf615Z1V48OPgw7Q37H16pDzGW6lgEIQSrMDEvgb9dq5qMvLDav-lbYHUI59kyjH5--_O0XcFSYpgYoZU-zvS6Fw7Oo43t0Z4y3Mqnk_NHYthSLWeLfrcuVNF0F6KJR94HMCdXlIzb-g1HaNhxstMFwdOEOuzNjcg066fZxKl56oeBA6KA"/>
+                            </div>
+                            <div class="w-7 h-7 rounded-full border-2 border-white overflow-hidden">
+                                <img class="w-full h-full object-cover" data-alt="Man in a professional studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIO4xx5aCqDD_WYa_zTz33I-ebofaiAHn5Q14UOcIXD_Kk2g14_Ao7buZpiwXpjsq4jpNquZZ5uFETtBW27EIah4JYfYMMRBk2vErHQP2HZ71R4DsGOfjlg_qXvl0Jp0zs2dP-RobN1pXKWYEXdWHTatVgfWwXXhkVYNWa0qqwYIszHuyAQ2lf5tVdrm7fsiaKcdBu3EfaELwCMCyRuieoobnJU10k--xAZUIef8li-_o8Wj6f07UDn2ovRcfx84TWuyY9pCYh4RU"/>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-on-surface-variant text-[10px] font-bold uppercase tracking-wider">
+                            Viewed
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="group bg-surface-container-lowest rounded-xl overflow-hidden ghost-border hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-all duration-300 flex flex-col">
+                <div class="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
+                    <img alt="Iconography Set" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern 3D abstract shapes with glass textures and soft pastel gradients in a minimal composition" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDWuvvzrHkhYiYxrbVT52Rzuj45Jubzp-LNbprw1uSiLelSoAC4qqEUMiAslJty2RaXZcf0z2Q4EiFup82hOeCX-PRXxdVQZYq_Nj_ZOA1ICHZV8kyvr8xx5JSrfGledgocgauzsHJyejH7DjMKzzyY_DD1o8kyW32EmPVNBTv8yRqB2XJIP04SBWFBh2qSlw5J8A5nHPrDT7qgRpO7ng5GtIQPIAj2b_TjPND1IaMgwlU3afsJ34xIWDsUPYmS0dWXHyBd_1iQy0"/>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-secondary text-white text-[10px] font-bold px-2 py-1 rounded tracking-wider uppercase">Pending Review</span>
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-bold text-on-surface text-lg leading-tight mb-1">System Icons v4</h3>
+                            <p class="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">SVG Collection</p>
+                        </div>
+                        <span class="text-xs font-bold bg-surface-container-high px-2 py-1 rounded">2.1 MB</span>
+                    </div>
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-surface-container-low">
+                        <div class="flex -space-x-2">
+                            <div class="w-7 h-7 rounded-full border-2 border-white overflow-hidden">
+                                <img class="w-full h-full object-cover" data-alt="Woman with short blonde hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAursJrZFL28zpQHrbQj8rQjKGU1L_rBdm6fHmX2fwt0Iv47x2RHKkm4qsvMwSUKuf7w79IqLP94sPe_sASxOQrfgaYGJ1KFI1KmwVZ4ftOC5NhHa2CqqR6c4W4PAXitor0AXO6hewaN5oiVKF_n5gQt2aHNl4f8wNUzYF3Fhu2WtLxyrarMd8lE0dvtubG6bXCuMlpWC3jLVlGsouy0kpPlXn_PfPOoJA5oX9uk-T-B3rK6F0QC9zH_B3DQTBiDPghN-82vx1o7yQ"/>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-primary text-[10px] font-bold uppercase tracking-wider">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_#3525cd]"></span>
+                            Commented
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 5 (Visual Variation - Large Card) -->
+            <div class="md:col-span-2 group bg-surface-container-lowest rounded-xl overflow-hidden ghost-border hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-all duration-300 flex flex-col md:flex-row">
+                <div class="relative md:w-1/2 aspect-[4/3] md:aspect-auto overflow-hidden bg-surface-container-low">
+                    <img alt="Web Design Layout" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Editorial website design with bold typography and elegant white space on a large desktop monitor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU7CIaGMcHubfY9Hh4uFq6iC_LGOvkzqDpEYs78L3kzELaHZ384zStUbev2gOd3LTwsCOX4EunhyRM-EdjNXJcKkidGSQLLemKHzd-2Du9K9TVrAEZiwi9TOcxBJx_T28abAqJa5vZE-QodgxHGCXjioQC71Fkn6HsVcN_TU_7alz82QY3D8llB167tRbp-eszlNV7J2ZDRrv1doDkDoFdcAuCul9QtVtLSKOSzxVdjuIaHdTmHzCLWAJod_5NtXELvDBEE8McOJI"/>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded tracking-wider uppercase">Approved</span>
+                    </div>
+                </div>
+                <div class="p-8 flex-1 flex flex-col justify-center">
+                    <div class="mb-6">
+                        <span class="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2 block">Featured Project</span>
+                        <h3 class="font-extrabold text-on-surface text-2xl leading-tight mb-2">Kinetic Marketing Landing</h3>
+                        <p class="text-on-surface-variant/80 text-sm leading-relaxed mb-4">High-fidelity web prototype focusing on smooth transitions and editorial grid layouts.</p>
+                        <div class="flex items-center gap-4">
+                            <span class="text-xs font-bold bg-surface-container-high px-2 py-1 rounded">Figma</span>
+                            <span class="text-xs font-bold bg-surface-container-high px-2 py-1 rounded">Desktop Prototype</span>
+                        </div>
+                    </div>
+                    <div class="pt-6 flex items-center justify-between border-t border-surface-container-low">
+                        <div class="flex items-center gap-3">
+                            <div class="flex -space-x-2">
+                                <div class="w-8 h-8 rounded-full border-2 border-white overflow-hidden">
+                                    <img class="w-full h-full object-cover" data-alt="Portrait of woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3iv1f6LWFWrvkjb4dYLdu0GQVVz6pVkhsEDXSMT9sauwt2XjanyYY2Dds84fMAxOb4zm29wRmmfXtvtjKzQU1Kial3YyrEcRBzyrVbpsQZIe-uoT7WLw81SvrdjtQelg4MY-_xaYZBEdE1lpCktGucH4WJmoORyXG376LPmpeJjIz8k4G3KwqkaanW17m9sj5sR7NbAJJ4sW0Zfo7tFI4jEuYEzybR9hZLjbA8moyTFKv9s9rqbagohrYsSwhK4ulV1YBGTR7Xv8"/>
+                                </div>
+                                <div class="w-8 h-8 rounded-full border-2 border-white overflow-hidden">
+                                    <img class="w-full h-full object-cover" data-alt="Portrait of man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsCP5JxHjPr7aaxeoRYuA1GOIxPv3pKxw1CejQqQ7afbrulJmGu4bb3yulLjtqV_f9RELJUWXZIwMGgF7sGcj4hvmAbPL-owviLz91IsrXM9wCl0j6XmfvWA8VM1DUOT3UOWtfQo-tD-gwqf9Jypc7LV5HEHXXF_ift2hT2PusiZrdDXPO8MoJCpKLDR6Fzyz9-uFkUxn5n8t5Gc4hMreFph9oPrNHU2fELPvvPRg_xzo8PpFHDrz9FTZ2TVXXUxw7SLvHqxIrVyQ"/>
+                                </div>
+                            </div>
+                            <span class="text-xs text-on-surface-variant font-medium">Updated 2h ago</span>
+                        </div>
+                        <button class="text-primary font-bold text-sm hover:underline">Open in Figma</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 6 -->
+            <div class="group bg-surface-container-lowest rounded-xl overflow-hidden ghost-border hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-all duration-300 flex flex-col">
+                <div class="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
+                    <img alt="Vector Illustration" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Vibrant abstract vector art with flowing organic shapes and neon lighting accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoPPEiG7W5nF-JGOq5L8ju5JOW0_LdTQoOWJ-pnF2yIP0JWPB60UmfD1kdkNBXRJf2XLJAnnegHOsfdBf-36Wl92eRJTgngs5jSbQ6fejJFj4TZ4aruZlquvOBtich3dW7J49Sa4ox9toHSuVSZtLKdCnt2PP9YtUdWthflbiYmkj1lVWpaHOypZHESUtCJgv3SjlGzGqpwHaYljVvivmw0C8vFVKHyK24lZ52OfKd1ARkc_kdkHCcUXqbw1gCFW0IxhO6rUdOaKI"/>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded tracking-wider uppercase">Approved</span>
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-bold text-on-surface text-lg leading-tight mb-1">Hero Graphics</h3>
+                            <p class="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">AI/SVG</p>
+                        </div>
+                        <span class="text-xs font-bold bg-surface-container-high px-2 py-1 rounded">45 MB</span>
+                    </div>
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-surface-container-low">
+                        <div class="flex -space-x-2">
+                            <div class="w-7 h-7 rounded-full border-2 border-white overflow-hidden">
+                                <img class="w-full h-full object-cover" data-alt="Portrait of woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9hMIRXUwOjfLyOovysl-nUk5Hnd1kfHv5gUHDymXGZjrE-h6PSw71G5QEYl5J972OUNqnjoTF1FK0QLMc_14a0Cd0OAY1pDACjcVP-YktTDFYHWFRyy7wsUZ_rg8UXmvvGvzaJG8LPbHySBZHVxFsdp7QKqoK6X1fCR6cgXdlUxKCX06xp4_-GAH4haZDtsGwGvEeI2zmlETagmKJfMMQCtryuD-2Sw8OZX0u5kXkVG3t6mkgWDdm0u06wpHCErte7GzMZlRz7Qk"/>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-on-surface-variant text-[10px] font-bold uppercase tracking-wider">
+                            Viewed
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 7 -->
+            <div class="group bg-surface-container-lowest rounded-xl overflow-hidden ghost-border hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-all duration-300 flex flex-col">
+                <div class="relative aspect-[4/3] overflow-hidden bg-surface-container-low">
+                    <img alt="Style Guide" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Close up of high-end magazine pages showing clean typography and editorial design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVZyhWaJEaRXVJyw6vg-8Foxf8Pz0_uxHraGTVsn9rnYG1IKtrmTFgwhjw2u9t_GW_sZbtk4JpcHgUqPFnT_8xXa_X154fmKQ3bdxAo5MqbIY_Ms440RpVS6HCcSUW4FQXPXYVEZF-KuAynOS4IlO9_dBrMFP7NY0iN41EAFzVFOfQvNBpYXVUh0Iu-n3a2oQ3FNDuCdLtqwnkPVfSSMHUZRO2eAXeeUScGIYHo6IX0MH2F8pg7JagMLbdtsJ2C-NSIYHB-GM837A"/>
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-secondary text-white text-[10px] font-bold px-2 py-1 rounded tracking-wider uppercase">Pending Review</span>
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-bold text-on-surface text-lg leading-tight mb-1">Typography Spec</h3>
+                            <p class="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">PDF</p>
+                        </div>
+                        <span class="text-xs font-bold bg-surface-container-high px-2 py-1 rounded">8.4 MB</span>
+                    </div>
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-surface-container-low">
+                        <div class="flex -space-x-2">
+                            <div class="w-7 h-7 rounded-full border-2 border-white overflow-hidden">
+                                <img class="w-full h-full object-cover" data-alt="Man in studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSKvtmHc1e4fxHDFDbeEj6mIr8WypJiHI61j5fqoMYMBWmSkFeCV-waD47xdVVIdvD7T7XOOhaqqPrMVzuiEjvwHru5XCTvP2JbtNZxT2FfVDhZ4AK8iUEsn9kvGlZDW3WrjlFHI6UVZMDybaXziq45zbs39aLeCtPykdX51xronxhAPEjaIjoI6p1dXYYn7KqCSnpvvZ-Kv74-vYQ-y5lfsk-JLBRMV6dviETM1EMqJeP8cJipP_liktKk5TJB84ji_R0duzYqSg"/>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-primary text-[10px] font-bold uppercase tracking-wider">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_#3525cd]"></span>
+                            Commented
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Bottom Navigation (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full glass-nav flex justify-around items-center h-16 px-4 z-50">
+    <a class="flex flex-col items-center justify-center text-primary" href="#">
+        <span class="material-symbols-outlined">grid_view</span>
+        <span class="text-[10px] font-bold mt-1">Projects</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+        <span class="material-symbols-outlined">assignment</span>
+        <span class="text-[10px] font-medium mt-1">Tasks</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+        <span class="material-symbols-outlined">group</span>
+        <span class="text-[10px] font-medium mt-1">Team</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="text-[10px] font-medium mt-1">Settings</span>
+    </a>
+</nav>
+<!-- Floating Action Button (Only on Mobile Gallery) -->
+<button class="md:hidden fixed bottom-20 right-6 w-14 h-14 signature-gradient text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-90 transition-transform">
+    <span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</body></html>

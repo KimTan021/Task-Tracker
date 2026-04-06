@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "tertiary-fixed": "#ffdbcc",
+                        "secondary-fixed": "#e2dfff",
+                        "background": "#fcf9f8",
+                        "surface-container-highest": "#e5e2e1",
+                        "primary": "#3525cd",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#c3c0ff",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-tertiary-fixed": "#351000",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "surface-tint": "#4d44e3",
+                        "secondary": "#58579b",
+                        "outline": "#777587",
+                        "on-secondary-fixed-variant": "#413f82",
+                        "on-background": "#1c1b1b",
+                        "surface-variant": "#e5e2e1",
+                        "on-surface": "#1c1b1b",
+                        "secondary-container": "#b6b4ff",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface": "#fcf9f8",
+                        "surface-bright": "#fcf9f8",
+                        "tertiary": "#7e3000",
+                        "on-primary-fixed": "#0f0069",
+                        "outline-variant": "#c7c4d8",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-surface-variant": "#464555",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#454386",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "primary-fixed": "#e2dfff",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-secondary-fixed": "#140f54",
+                        "surface-container": "#f0edec",
+                        "primary-container": "#4f46e5",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "surface-container-high": "#ebe7e7",
+                        "tertiary-container": "#a44100",
+                        "on-primary-container": "#dad7ff",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#c3c0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .gantt-grid {
+            background-size: 100px 100%;
+            background-image: linear-gradient(to right, rgba(119, 117, 135, 0.1) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-40 flex justify-between items-center px-6 h-16 bg-[#fcf9f8] dark:bg-stone-950">
+    <div class="flex items-center gap-8">
+        <span class="text-xl font-extrabold tracking-tight text-[#1c1b1b] dark:text-stone-100 font-headline">Nexus Flow</span>
+        <nav class="hidden md:flex items-center space-x-6 h-full">
+            <a class="text-stone-500 dark:text-stone-400 font-['Manrope'] font-semibold hover:bg-stone-200/50 transition-colors px-2 py-1" href="#">Dashboard</a>
+            <a class="text-[#3525cd] dark:text-[#4f46e5] font-bold border-b-2 border-[#3525cd] font-['Manrope'] px-2 py-1" href="#">Projects</a>
+            <a class="text-stone-500 dark:text-stone-400 font-['Manrope'] font-semibold hover:bg-stone-200/50 transition-colors px-2 py-1" href="#">Resources</a>
+        </nav>
+    </div>
+    <div class="flex items-center space-x-4">
+        <div class="relative group">
+            <span class="material-symbols-outlined text-on-surface-variant cursor-pointer p-2 rounded-full hover:bg-stone-200/50 transition-colors" data-icon="notifications">notifications</span>
+            <span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_#3525cd]"></span>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant cursor-pointer p-2 rounded-full hover:bg-stone-200/50 transition-colors" data-icon="group">group</span>
+        <img alt="User profile avatar" class="w-8 h-8 rounded-full bg-surface-container-highest" data-alt="close up professional portrait of a software architect with minimal background, clean lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBvnvawiYd0fu8PImgb8JuLwtU33mmBAc--QnsZVqeISKx9XE_oxkPI44PPP4QGbf_L7rI2ukKSpb27P5VS3HzF0Lq4hd-WqypvVlBr0w6U6q8dCW440ANqn4bvzs_ja02sNlV21fDkAI9ymjyzQLGnJPXUsNq2a3-vHt8MTECt-0g_ujt4ddX0cTfSir4PRbY5FfN-NG6yDKJbgXPewPEzW_wLNZreEGtgRjHjVejgxlL4K3HWf2W0VlZfU8HRpLRZr2PWQRp0xI"/>
+    </div>
+</header>
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-[#f6f3f2] dark:bg-stone-900 flex flex-col p-4 space-y-2 z-30">
+    <div class="mb-6 px-2">
+        <div class="flex items-center gap-3 mb-1">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-sm" data-icon="grid_view">grid_view</span>
+            </div>
+            <div>
+                <h2 class="text-lg font-bold text-[#1c1b1b] dark:text-white leading-tight">Kinetic Monolith</h2>
+                <p class="text-xs text-stone-500 dark:text-stone-400">Design Studio</p>
+            </div>
+        </div>
+    </div>
+    <nav class="flex-grow space-y-1">
+        <a class="flex items-center gap-3 px-3 py-2 text-stone-500 dark:text-stone-400 hover:bg-[#e5e2e1] dark:hover:bg-stone-800 transition-all rounded-lg font-['Inter'] text-sm" href="#">
+            <span class="material-symbols-outlined text-xl" data-icon="grid_view">grid_view</span>
+            <span>Projects</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2 text-[#1c1b1b] dark:text-white font-bold bg-[#ffffff] dark:bg-stone-800 rounded-lg font-['Inter'] text-sm translate-x-1 duration-200" href="#">
+            <span class="material-symbols-outlined text-xl" data-icon="assignment">assignment</span>
+            <span>Tasks</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2 text-stone-500 dark:text-stone-400 hover:bg-[#e5e2e1] dark:hover:bg-stone-800 transition-all rounded-lg font-['Inter'] text-sm" href="#">
+            <span class="material-symbols-outlined text-xl" data-icon="group">group</span>
+            <span>Team</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2 text-stone-500 dark:text-stone-400 hover:bg-[#e5e2e1] dark:hover:bg-stone-800 transition-all rounded-lg font-['Inter'] text-sm" href="#">
+            <span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+            <span>Settings</span>
+        </a>
+    </nav>
+    <div class="pt-4 mt-auto border-t border-outline-variant/10">
+        <button class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-semibold flex items-center justify-center gap-2 mb-4 shadow-lg shadow-primary/20 active:scale-[0.98] transition-transform">
+            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+            New Project
+        </button>
+        <a class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:bg-stone-200 transition-all rounded-lg text-sm" href="#">
+            <span class="material-symbols-outlined text-xl" data-icon="help">help</span>
+            <span>Help</span>
+        </a>
+    </div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-8 min-h-screen bg-surface">
+    <!-- Header & Controls Section -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+        <div>
+            <div class="flex items-center gap-3 mb-2">
+                <span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-widest uppercase">Release 2.4</span>
+                <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant text-[10px] font-bold">
+                    <span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_4px_#3525cd]"></span>
+                    REAL-TIME
+                </div>
+            </div>
+            <h1 class="text-4xl font-extrabold font-headline text-on-surface tracking-tight">Timeline Architecture</h1>
+            <p class="text-on-surface-variant mt-2 font-medium">Q3 Product Roadmap &amp; Infrastructure Overhaul</p>
+        </div>
+        <div class="flex items-center gap-2 bg-surface-container-low p-1 rounded-xl">
+            <button class="px-4 py-2 rounded-lg text-sm font-semibold text-stone-500 hover:bg-surface-container-highest transition-colors">Day</button>
+            <button class="px-4 py-2 rounded-lg text-sm font-bold text-on-surface bg-surface-container-lowest shadow-sm">Week</button>
+            <button class="px-4 py-2 rounded-lg text-sm font-semibold text-stone-500 hover:bg-surface-container-highest transition-colors">Month</button>
+            <button class="px-4 py-2 rounded-lg text-sm font-semibold text-stone-500 hover:bg-surface-container-highest transition-colors">Quarter</button>
+        </div>
+    </div>
+    <!-- Gantt/Timeline Viewport -->
+    <div class="bg-surface-container-lowest rounded-2xl shadow-[0_20px_40px_rgba(28,27,27,0.04)] overflow-hidden flex flex-col">
+        <!-- Timeline Header (Months/Weeks) -->
+        <div class="flex h-12 border-b border-outline-variant/10 bg-surface-container-low">
+            <div class="w-80 flex-shrink-0 px-6 flex items-center border-r border-outline-variant/10">
+                <span class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Task Structure</span>
+            </div>
+            <div class="flex-grow flex overflow-x-auto no-scrollbar gantt-grid">
+                <div class="flex-shrink-0 w-[100px] flex items-center justify-center text-[10px] font-bold text-on-surface-variant">OCT 02</div>
+                <div class="flex-shrink-0 w-[100px] flex items-center justify-center text-[10px] font-bold text-on-surface-variant">OCT 09</div>
+                <div class="flex-shrink-0 w-[100px] flex items-center justify-center text-[10px] font-bold text-on-surface-variant">OCT 16</div>
+                <div class="flex-shrink-0 w-[100px] flex items-center justify-center text-[10px] font-bold text-on-surface-variant">OCT 23</div>
+                <div class="flex-shrink-0 w-[100px] flex items-center justify-center text-[10px] font-bold text-on-surface-variant">OCT 30</div>
+                <div class="flex-shrink-0 w-[100px] flex items-center justify-center text-[10px] font-bold text-on-surface-variant">NOV 06</div>
+                <div class="flex-shrink-0 w-[100px] flex items-center justify-center text-[10px] font-bold text-on-surface-variant">NOV 13</div>
+                <div class="flex-shrink-0 w-[100px] flex items-center justify-center text-[10px] font-bold text-on-surface-variant">NOV 20</div>
+            </div>
+        </div>
+        <!-- Content Rows -->
+        <div class="flex flex-col">
+            <!-- Row 1: Active Task with Progress -->
+            <div class="flex h-16 group hover:bg-surface-container-low/50 transition-colors">
+                <div class="w-80 flex-shrink-0 px-6 flex items-center justify-between border-r border-outline-variant/10">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-xl" data-icon="account_tree">account_tree</span>
+                        <span class="text-sm font-semibold text-on-surface">Design System Core</span>
+                    </div>
+                    <img alt="User avatar" class="w-5 h-5 rounded-full ring-2 ring-surface" data-alt="minimalist professional headshot of a female designer with glasses and creative lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-mAlaxCjhLVpwoDAgDOOYxiwwnKVh1QdGRtQIR4D4QmaacByUxD1jVa3qTzKXn9-s6TZ5kiDQbBhCFXg-wZg8cduYz7Wu8RzNE9Qwlgewjcyjgg82VgMgAiNnsyNSfFjmvs1OV53kL6672tyMotHpCOp17RGBPRZqub03po2d6eiPyiYcqwyeUo_TuVJWqhjOqsRartF5QP8vhuihf_a7TjuPQfBJcsSIFDF9bAcUiM01twtB0PGYiWAEt8ptR1eLypHlAr6meKs"/>
+                </div>
+                <div class="flex-grow relative gantt-grid">
+                    <div class="absolute top-4 left-[100px] w-[300px] h-8 bg-primary/10 rounded-lg overflow-hidden group/bar cursor-pointer">
+                        <div class="h-full bg-gradient-to-r from-primary to-primary-container w-[70%] rounded-r-lg shadow-lg shadow-primary/20"></div>
+                        <span class="absolute top-1/2 left-4 -translate-y-1/2 text-[10px] font-bold text-white drop-shadow-sm">70% COMPLETE</span>
+                    </div>
+                    <!-- Dependency Line -->
+                    <svg class="absolute top-8 left-[400px] w-20 h-16 pointer-events-none overflow-visible">
+                        <path d="M 0 0 L 20 0 L 20 48 L 50 48" fill="none" stroke="#3525cd" stroke-dasharray="4 4" stroke-width="1.5"></path>
+                    </svg>
+                </div>
+            </div>
+            <!-- Row 2: Milestone -->
+            <div class="flex h-16 group hover:bg-surface-container-low/50 transition-colors">
+                <div class="w-80 flex-shrink-0 px-6 flex items-center justify-between border-r border-outline-variant/10">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-secondary text-xl" data-icon="flag">flag</span>
+                        <span class="text-sm font-semibold text-on-surface">Alpha Architecture Review</span>
+                    </div>
+                </div>
+                <div class="flex-grow relative gantt-grid flex items-center">
+                    <div class="absolute left-[450px] w-6 h-6 bg-primary rotate-45 flex items-center justify-center shadow-lg shadow-primary/30 group/milestone cursor-pointer">
+                        <span class="material-symbols-outlined text-white text-[12px] -rotate-45" data-icon="check" data-weight="fill">check</span>
+                        <div class="absolute top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover/milestone:opacity-100 transition-opacity whitespace-nowrap bg-on-surface text-white text-[10px] px-2 py-1 rounded">
+                            Milestone Reached: Oct 28
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Row 3: Sub-task with Deadline -->
+            <div class="flex h-16 group hover:bg-surface-container-low/50 transition-colors">
+                <div class="w-80 flex-shrink-0 px-6 flex items-center justify-between border-r border-outline-variant/10">
+                    <div class="flex items-center gap-3 pl-6 border-l-2 border-outline-variant/20">
+                        <span class="text-sm font-medium text-on-surface-variant">Frontend Scaffolding</span>
+                    </div>
+                    <img alt="User avatar" class="w-5 h-5 rounded-full ring-2 ring-surface" data-alt="clean professional headshot of a male developer in a studio with soft daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_LvOAIK9IZIWOpI8O28RUxEi41mdeuRRRl5BvjriEn_5jyFqD3Xt3x0H-mrrcgnzHqgchAGlqAFl2AQN_RiKk6mbmK7wbJFWTepAgu24aq9un2Mk_MJC10WoVKsG6r3kXkOgKbRjXXoEfUE3-HpbN_mpz2FbkzPGnoRY8n6vE3cAn7QMpBLUrwm36jUDIimpqCALwjKFMcQvtlsfhC0glRbtvRldzths7oxzIRBuW7WtDMoWGpkwivEw_NmVIR0GIy5Q4RZl-XN8"/>
+                </div>
+                <div class="flex-grow relative gantt-grid">
+                    <div class="absolute top-4 left-[250px] w-[200px] h-8 bg-surface-container-high rounded-lg group/bar-2 cursor-pointer border border-primary/5">
+                        <div class="h-full bg-secondary/20 w-[40%] rounded-lg"></div>
+                        <div class="absolute top-0 right-0 h-full w-1 bg-error rounded-r-lg shadow-[0_0_8px_#ba1a1a]"></div>
+                    </div>
+                    <!-- Deadline Label -->
+                    <div class="absolute top-1 left-[455px] flex items-center gap-1 text-error">
+                        <span class="material-symbols-outlined text-xs" data-icon="report">report</span>
+                        <span class="text-[9px] font-bold uppercase tracking-tighter">Deadline: Nov 02</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Row 4: Team Resource Placeholder -->
+            <div class="flex h-16 group hover:bg-surface-container-low/50 transition-colors">
+                <div class="w-80 flex-shrink-0 px-6 flex items-center justify-between border-r border-outline-variant/10">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-on-surface-variant text-xl" data-icon="database">database</span>
+                        <span class="text-sm font-semibold text-on-surface">Cloud API Integration</span>
+                    </div>
+                    <div class="flex -space-x-2">
+                        <img alt="User" class="w-5 h-5 rounded-full ring-2 ring-surface" data-alt="portrait of person smiling softly" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJugWWHksyPq6SPDYT3gF6HRRsofubo--Id_9-GH8GwiOB1mA2uPxyB_2f8BTtpO_3fb0psb0fcrICY8mjRewlOFlQJN4jkQGsoeWeTZGc8IsuIt9QNNzKKk3JElSlC8mg7fMN6rgrcwpLddY_pcGevE2Y86Flzn8DOY4mlzzHVrPMZ6X8m64ojKeNE9rPDePFz0Y2zyUhxfBpEprYznn50z3A1PH3YQzVhTigOvF2jf4xEzo-lipNNsbHZkQjmuRULXiH88Ki82A"/>
+                        <img alt="User" class="w-5 h-5 rounded-full ring-2 ring-surface" data-alt="portrait of focused person working" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWh_7ojxhjCgRdMe8ZqhewXHEWBhpxGdVwuzQ_Cag5JGu4z2BVUuyiPjHwgvMC7AGrJ9V_beXprSp-FsvbjQoww0HkqjA_gpFLGFeBzbszagqKY16N27A2IQi4gUu-UDqOMviE6Wq4-VvxXp9sRZjpqjC62rR1MZ4B9QMerFQUKFc24yBj-I1EsBw0sm-DqFG2K32oA20Jx0IBCHbqDqXRhoaBVhrMcXP-FJQhCglyr5um_XhLDHJJUSk1EdjXzDB5kEEY3e0uKGQ"/>
+                    </div>
+                </div>
+                <div class="flex-grow relative gantt-grid">
+                    <div class="absolute top-4 left-[500px] w-[250px] h-8 bg-primary-container/20 rounded-lg cursor-pointer">
+                        <div class="h-full bg-primary-container/40 w-[15%] rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Empty state visual filler for vertical depth -->
+            <div class="flex h-16 opacity-30">
+                <div class="w-80 border-r border-outline-variant/10"></div>
+                <div class="flex-grow gantt-grid"></div>
+            </div>
+            <div class="flex h-16 opacity-10">
+                <div class="w-80 border-r border-outline-variant/10"></div>
+                <div class="flex-grow gantt-grid"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Analytical Legend / Context -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="p-6 bg-surface-container-low rounded-xl">
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">On-track tasks</p>
+            <div class="flex items-end gap-2">
+                <span class="text-2xl font-extrabold font-headline">12</span>
+                <span class="text-xs text-secondary font-bold pb-1">+2 this week</span>
+            </div>
+        </div>
+        <div class="p-6 bg-surface-container-low rounded-xl">
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Milestones reached</p>
+            <div class="flex items-end gap-2">
+                <span class="text-2xl font-extrabold font-headline">04</span>
+                <span class="text-xs text-primary font-bold pb-1">80% of Q3</span>
+            </div>
+        </div>
+        <div class="p-6 bg-surface-container-low rounded-xl">
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Active Resources</p>
+            <div class="flex items-center -space-x-3 mt-2">
+                <div class="w-8 h-8 rounded-full bg-primary-fixed border-2 border-surface flex items-center justify-center text-[10px] font-bold">JD</div>
+                <div class="w-8 h-8 rounded-full bg-secondary-fixed border-2 border-surface flex items-center justify-center text-[10px] font-bold">ML</div>
+                <div class="w-8 h-8 rounded-full bg-tertiary-fixed border-2 border-surface flex items-center justify-center text-[10px] font-bold">AK</div>
+                <div class="w-8 h-8 rounded-full bg-surface-container-highest border-2 border-surface flex items-center justify-center text-[10px] font-bold">+8</div>
+            </div>
+        </div>
+        <div class="p-6 bg-surface-container-low rounded-xl border-l-4 border-primary">
+            <p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Next Sprint</p>
+            <p class="text-sm font-bold text-on-surface">Fluid Engine v2.0</p>
+            <p class="text-xs text-on-surface-variant">Starting in 4 days</p>
+        </div>
+    </div>
+</main>
+</body></html>

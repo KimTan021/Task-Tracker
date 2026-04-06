@@ -62,14 +62,14 @@ build/
 .vscode/
 
 ### Node / Frontend (frontend-react) ###
-/frontend-react/node_modules/
-/frontend-react/dist/
-/frontend-react/dist-ssr/
-/frontend-react/build_error.txt
-/frontend-react/.env
-/frontend-react/.env.*
-/frontend-react/vite.config.ts.timestamp-*
-/frontend-react/src/vite-env.d.ts.timestamp-*
+/frontend/node_modules/
+/frontend/dist/
+/frontend/dist-ssr/
+/frontend/build_error.txt
+/frontend/.env
+/frontend/.env.*
+/frontend/vite.config.ts.timestamp-*
+/frontend/src/vite-env.d.ts.timestamp-*
 
 # Environment Variables & Secrets
 .env
@@ -80,7 +80,6 @@ build/
 .env.local
 
 # Project Specific
-/uploads/
 /HELP.md
 
 ### OS ###
@@ -91,3 +90,7 @@ build/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Agent
+.agent/
+docs/
