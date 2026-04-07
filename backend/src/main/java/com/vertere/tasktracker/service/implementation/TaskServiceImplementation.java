@@ -63,7 +63,8 @@ public class TaskServiceImplementation implements TaskService {
 
     @Override
     public Task findTaskById(Integer taskId){
-        return taskRepository.findAccessibleTaskById(taskId, getCurrentUserEmail()).orElse(null);
+        return taskRepository.findAccessibleTaskById(taskId, getCurrentUserEmail())
+                .orElseThrow(() -> new TaskNotFound("No task found at specified id or unauthorized access."));
     }
 
     @Override
@@ -128,9 +129,7 @@ public class TaskServiceImplementation implements TaskService {
     @Override
     public void deleteTaskById(Integer taskId){
         Task existing = findTaskById(taskId);
-        if (existing != null) {
-            taskRepository.deleteById(taskId);
-            broadcastProjectTasksUpdate(existing.getProject());
-        }
+        taskRepository.deleteById(taskId);
+        broadcastProjectTasksUpdate(existing.getProject());
     }
 }

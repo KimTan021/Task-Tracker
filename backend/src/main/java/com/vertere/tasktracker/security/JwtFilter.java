@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -34,13 +35,14 @@ public class JwtFilter extends OncePerRequestFilter {
             if(jwtUtil.isTokenValid(token)){
                 String username = jwtUtil.extractUsername(token);
                 // Final Fix: Add a default authority required by some Spring configurations
-                java.util.List<org.springframework.security.core.GrantedAuthority> authorities =
-                    java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_USER"));
-
                 String role = jwtUtil.extractRole(token);
+
+                List<GrantedAuthority> authorities = (role != null && !role.isBlank())
+                        ? List.of(new SimpleGrantedAuthority(role))
+                        : List.of(new SimpleGrantedAuthority("ROLE_USER"));
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(username, null, authorities);
-
                 // Final Fix: Populate authentication details
                 authentication.setDetails(new org.springframework.security.web.authentication.WebAuthenticationDetailsSource().buildDetails(request));
 

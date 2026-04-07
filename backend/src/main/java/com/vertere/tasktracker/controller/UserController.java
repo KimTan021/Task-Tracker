@@ -45,6 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
+    @Operation(summary = "Search for a user/list of users.")
     public List<User> searchUsers(@RequestParam String query) {
         return userService.searchByUsername(query);
     }
