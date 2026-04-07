@@ -31,7 +31,23 @@ public class AuthServiceImplementation implements AuthService {
             String encoded = passwordEncoder.encode(user.getUserPassword().trim());
             user.setUserPassword(encoded);
         }
+        user.setUserRole("ROLE_USER");
         return userRepository.save(user);
+    }
+
+    @Override
+    public User editUser(Integer userId, User updatedUser){
+        User existing = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        existing.setUserName((updatedUser.getUserName()));
+        existing.setUserEmail(updatedUser.getUserEmail());
+
+        if(updatedUser.getUserPassword() != null && !updatedUser.getUserPassword().isBlank()){
+            existing.setUserPassword(passwordEncoder.encode(updatedUser.getUserPassword()));
+        }
+
+        return userRepository.save(existing);
     }
 
     @Override
@@ -47,7 +63,7 @@ public class AuthServiceImplementation implements AuthService {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "Invalid credential");
         }
 
-        String token = jwtUtil.generateToken(user.getUserEmail());
+        String token = jwtUtil.generateToken(user.getUserEmail(), user.getUserRole());
         return new LoginResponseDTO(token, user.getUserId(), user.getUserName(), user.getUserEmail());
     }
 }

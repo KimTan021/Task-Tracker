@@ -4,13 +4,10 @@ import com.vertere.tasktracker.dto.request.LoginRequestDTO;
 import com.vertere.tasktracker.dto.response.LoginResponseDTO;
 import com.vertere.tasktracker.entity.User;
 import com.vertere.tasktracker.service.AuthService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @org.springframework.web.bind.annotation.CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"})
 public class AuthController {
     private final AuthService authService;
@@ -27,5 +24,10 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponseDTO login(@RequestBody LoginRequestDTO request){
         return authService.login(request);
+    }
+
+    @PutMapping("/edit/{id}")
+    public User editUser(@PathVariable Integer id, @RequestBody User updatedUser){
+        return authService.editUser(id, updatedUser);
     }
 }
