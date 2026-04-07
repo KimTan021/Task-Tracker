@@ -12,6 +12,7 @@ export interface User {
   id: string;
   name: string;
   avatar: string;
+  email?: string;
 }
 
 export interface Task {
@@ -44,7 +45,7 @@ export interface TaskInput {
   tags?: string[];
   startDate?: string;
   dueDate?: string;
-  assigneeName?: string;
+  assigneeIds?: number[];
   archived?: boolean;
 }
 
@@ -82,16 +83,29 @@ const getTaskMetadata = (task: Record<string, any>, status: Status) => {
   return { text: 'Recently updated', icon: 'history' as const };
 };
 
-const mapDbTaskToUI = (dbTask: Record<string, any>): Task => {
-  const status = (dbTask.taskStatus as Status) || 'todo';
-  const normalizedAssigneeName = typeof dbTask.assigneeName === 'string' ? dbTask.assigneeName.trim() : '';
-  const assigneeName = normalizedAssigneeName || 'Unassigned';
-  const initials = assigneeName
+const getInitials = (name: string) =>
+  name
     .split(' ')
     .filter(Boolean)
     .slice(0, 2)
     .map((part: string) => part[0]?.toUpperCase())
     .join('') || 'NA';
+
+const mapDbTaskToUI = (dbTask: Record<string, any>): Task => {
+  const status = (dbTask.taskStatus as Status) || 'todo';
+  const assignees = Array.isArray(dbTask.assignees)
+    ? dbTask.assignees
+        .map((assignee: Record<string, any>) => ({
+          id: String(assignee.userId),
+          name: assignee.userName,
+          email: assignee.userEmail,
+          avatar: getInitials(assignee.userName || ''),
+        }))
+        .filter((assignee: User) => Boolean(assignee.name))
+    : [];
+  const normalizedAssigneeName = typeof dbTask.assigneeName === 'string'
+    ? dbTask.assigneeName.trim()
+    : assignees.map((assignee) => assignee.name).join(', ');
 
   return {
     id: String(dbTask.taskId),
@@ -102,7 +116,7 @@ const mapDbTaskToUI = (dbTask: Record<string, any>): Task => {
     priority: (dbTask.taskPriority as Priority) || 'Medium',
     tags: dbTask.taskTags ? dbTask.taskTags.split(',').map((tag: string) => tag.trim()).filter(Boolean) : [],
     assigneeName: normalizedAssigneeName,
-    assignees: normalizedAssigneeName ? [{ id: `${dbTask.taskId}-assignee`, name: normalizedAssigneeName, avatar: initials }] : [],
+    assignees,
     startDate: dbTask.taskStartDate || undefined,
     dueDate: dbTask.taskDateDue || undefined,
     archived: Boolean(dbTask.archived),
@@ -122,7 +136,7 @@ const toPayload = (input: Partial<TaskInput>, existing?: Task) => ({
   taskTags: (input.tags ?? existing?.tags ?? []).join(','),
   taskStartDate: input.startDate || existing?.startDate || null,
   taskDateDue: input.dueDate || existing?.dueDate || null,
-  assigneeName: input.assigneeName ?? existing?.assigneeName ?? '',
+  assigneeIds: input.assigneeIds ?? existing?.assignees.map((assignee) => Number(assignee.id)) ?? [],
   archived: input.archived ?? existing?.archived ?? false,
 });
 

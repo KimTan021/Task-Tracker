@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -42,12 +44,16 @@ public class Task {
     @Column(name = "task_tags", nullable = true)
     private String taskTags;
 
-    @Column(name = "assignee_name", nullable = true)
+    @Column(name = "assignee_name", nullable = true, length = 512)
     private String assigneeName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignee_id")
-    private User assignee;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "task_assignee",
+        joinColumns = @JoinColumn(name = "task_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> assignees = new LinkedHashSet<>();
 
     @Column(name = "archived", nullable = false)
     private Boolean archived = false;

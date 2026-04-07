@@ -168,8 +168,12 @@ public class ProjectServiceImplementation implements ProjectService {
             throw new ResponseStatusException(NOT_FOUND, "Collaborator not found in this project");
         }
         project.getCoOwners().removeIf(existingCoOwner -> existingCoOwner.getUserId().equals(userId));
-
-        taskRepository.clearAssignmentsForProjectMember(projectId, userId);
+        taskRepository.findProjectTasksAssignedToUser(projectId, userId).forEach(task -> {
+            task.getAssignees().removeIf(assignee -> assignee.getUserId().equals(userId));
+            task.setAssigneeName(task.getAssignees().stream()
+                .map(User::getUserName)
+                .collect(java.util.stream.Collectors.joining(", ")));
+        });
         projectRepository.save(project);
         broadcastProjectTasksUpdate(project, member.getUserEmail());
     }

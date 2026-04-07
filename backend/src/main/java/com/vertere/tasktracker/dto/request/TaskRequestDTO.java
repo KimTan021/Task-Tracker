@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record TaskRequestDTO(
     Integer projectId,
@@ -28,8 +29,7 @@ public record TaskRequestDTO(
     @Size(max = 255, message = "Task tags must be 255 characters or fewer")
     String taskTags,
 
-    @Size(max = 120, message = "Assignee name must be 120 characters or fewer")
-    String assigneeName,
+    List<Integer> assigneeIds,
 
     Boolean archived
 ) {

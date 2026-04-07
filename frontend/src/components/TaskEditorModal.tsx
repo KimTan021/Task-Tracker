@@ -35,7 +35,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
     tags: [],
     startDate: '',
     dueDate: '',
-    assigneeName: '',
+    assigneeIds: [],
     archived: false,
   });
 
@@ -61,7 +61,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
       tags: task?.tags || [],
       startDate: toLocalDateTimeValue(task?.startDate),
       dueDate: toLocalDateTimeValue(task?.dueDate),
-      assigneeName: task?.assigneeName || '',
+      assigneeIds: task?.assignees.map((assignee) => Number(assignee.id)) || [],
       archived: task?.archived || false,
     });
     setAssigneeQuery('');
@@ -90,6 +90,11 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
     );
   }, [assigneeQuery, members]);
 
+  const selectedMembers = useMemo(
+    () => members.filter((member) => (form.assigneeIds || []).includes(member.userId)),
+    [form.assigneeIds, members],
+  );
+
   if (!isOpen) return null;
 
   const setField = <K extends keyof TaskInput>(key: K, value: TaskInput[K]) => {
@@ -103,7 +108,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
       ...form,
       title: form.title.trim(),
       description: form.description?.trim() || '',
-      assigneeName: form.assigneeName?.trim() || '',
+      assigneeIds: form.assigneeIds || [],
       tags: form.tags || [],
       startDate: form.startDate || undefined,
       dueDate: form.dueDate || undefined,
@@ -205,16 +210,38 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                   }}
                   className="w-full flex items-center justify-between rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 border border-transparent hover:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all text-left"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
                     <div className="w-6 h-6 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
                       <UserIcon className="w-3 h-3" />
                     </div>
-                    <span className={`font-bold text-[13px] ${form.assigneeName ? 'text-slate-700' : 'text-slate-300'}`}>
-                      {form.assigneeName || 'Select Operative'}
+                    <span className={`min-w-0 truncate font-bold text-[13px] ${selectedMembers.length > 0 ? 'text-slate-700' : 'text-slate-300'}`}>
+                      {selectedMembers.length === 0
+                        ? 'Select Operatives'
+                        : selectedMembers.length === 1
+                          ? selectedMembers[0].userName
+                          : `${selectedMembers.length} operatives selected`}
                     </span>
                   </div>
                   <X className={`w-4 h-4 text-slate-300 transition-transform ${showAssigneePicker ? 'rotate-180' : 'rotate-45'}`} />
                 </button>
+
+                {selectedMembers.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedMembers.map((member) => (
+                      <span key={member.userId} className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-indigo-600">
+                        <span className="truncate max-w-[160px]">{member.userName}</span>
+                        <button
+                          type="button"
+                          onClick={() => setField('assigneeIds', (form.assigneeIds || []).filter((id) => id !== member.userId))}
+                          className="rounded-full text-indigo-400 transition-colors hover:text-indigo-700"
+                          aria-label={`Remove ${member.userName}`}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 {showAssigneePicker && (
                   <div className="absolute top-full mt-2 left-0 w-full bg-white rounded-2xl shadow-xl overflow-hidden z-20 animate-scale-in">
@@ -234,19 +261,25 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                     <div className="max-h-64 overflow-y-auto p-2 space-y-1">
                       <button
                         type="button"
-                        onClick={() => { setField('assigneeName', ''); setShowAssigneePicker(false); setAssigneeQuery(''); }}
+                        onClick={() => { setField('assigneeIds', []); setShowAssigneePicker(false); setAssigneeQuery(''); }}
                         className="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-[11px] font-black uppercase tracking-widest text-slate-400"
                       >
-                        Unassign
+                        Clear all assignees
                       </button>
                       {filteredMembers.length > 0 ? (
                         filteredMembers.map(member => (
                           <button
                             key={member.userId}
                             type="button"
-                            onClick={() => { setField('assigneeName', member.userName); setShowAssigneePicker(false); setAssigneeQuery(''); }}
+                            onClick={() => {
+                              const currentIds = form.assigneeIds || [];
+                              const nextIds = currentIds.includes(member.userId)
+                                ? currentIds.filter((id) => id !== member.userId)
+                                : [...currentIds, member.userId];
+                              setField('assigneeIds', nextIds);
+                            }}
                             className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
-                              form.assigneeName === member.userName ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600'
+                              (form.assigneeIds || []).includes(member.userId) ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600'
                             }`}
                           >
                             <div className="flex min-w-0 items-center gap-3">
@@ -256,7 +289,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                                 <span className="block truncate text-[10px] font-semibold text-slate-400">{member.userEmail}</span>
                               </div>
                             </div>
-                            {form.assigneeName === member.userName && <Check className="w-4 h-4 shrink-0" />}
+                            {(form.assigneeIds || []).includes(member.userId) && <Check className="w-4 h-4 shrink-0" />}
                           </button>
                         ))
                       ) : (

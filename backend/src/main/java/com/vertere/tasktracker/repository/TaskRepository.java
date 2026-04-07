@@ -2,7 +2,6 @@ package com.vertere.tasktracker.repository;
 
 import com.vertere.tasktracker.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
@@ -15,6 +14,7 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     @Query("""
         select distinct t
         from Task t
+        left join fetch t.assignees a
         left join t.project.members m
         where t.archived = false
           and (t.project.user.userEmail = :userEmail or m.userEmail = :userEmail)
@@ -24,19 +24,19 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     @Query("""
         select distinct t
         from Task t
+        left join fetch t.assignees a
         left join t.project.members m
         where t.taskId = :taskId
           and (t.project.user.userEmail = :userEmail or m.userEmail = :userEmail)
     """)
     Optional<Task> findAccessibleTaskById(@Param("taskId") Integer taskId, @Param("userEmail") String userEmail);
 
-    @Modifying
     @Query("""
-        update Task t
-        set t.assignee = null,
-            t.assigneeName = ''
+        select distinct t
+        from Task t
+        join fetch t.assignees a
         where t.project.projectId = :projectId
-          and t.assignee.userId = :userId
+          and a.userId = :userId
     """)
-    int clearAssignmentsForProjectMember(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
+    List<Task> findProjectTasksAssignedToUser(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
 }

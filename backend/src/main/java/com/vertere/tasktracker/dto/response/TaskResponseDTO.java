@@ -1,6 +1,7 @@
 package com.vertere.tasktracker.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record TaskResponseDTO(
     Integer taskId,
@@ -12,6 +13,7 @@ public record TaskResponseDTO(
     LocalDateTime taskStartDate,
     String taskPriority,
     String taskTags,
+    List<TaskAssigneeResponseDTO> assignees,
     String assigneeName,
     Boolean archived,
     LocalDateTime createdAt,

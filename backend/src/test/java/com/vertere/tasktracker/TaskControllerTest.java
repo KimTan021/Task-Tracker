@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -69,6 +70,7 @@ class TaskControllerTest {
         sampleTask.setTaskDescription("A sample description");
         sampleTask.setTaskStatus("todo");
         sampleTask.setTaskPriority("Medium");
+        sampleTask.setAssignees(new LinkedHashSet<>());
         sampleTask.setArchived(false);
         sampleTask.setCreatedAt(LocalDateTime.now());
         sampleTask.setUpdatedAt(LocalDateTime.now());
@@ -144,7 +146,7 @@ class TaskControllerTest {
                 null,           // taskStartDate
                 "Medium",       // taskPriority
                 null,           // taskTags
-                null,           // assigneeName
+                List.of(),      // assigneeIds
                 false           // archived
         );
 
@@ -173,7 +175,7 @@ class TaskControllerTest {
                 null,
                 "Medium",
                 null,
-                null,
+                List.of(),
                 false
         );
 
@@ -210,7 +212,7 @@ class TaskControllerTest {
                 null,
                 "High",
                 null,
-                null,
+                List.of(),
                 false
         );
 
@@ -239,7 +241,7 @@ class TaskControllerTest {
                 null,
                 "Medium",
                 null,
-                null,
+                List.of(),
                 false
         );
 
@@ -298,7 +300,7 @@ class TaskControllerTest {
                 null,
                 "Medium",
                 null,
-                null,
+                List.of(),
                 false
         );
 
@@ -322,7 +324,7 @@ class TaskControllerTest {
                 null,
                 "Medium",
                 null,
-                null,
+                List.of(),
                 false
         );
 

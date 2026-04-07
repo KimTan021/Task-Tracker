@@ -2,9 +2,11 @@ package com.vertere.tasktracker.controller;
 
 
 import com.vertere.tasktracker.dto.request.TaskRequestDTO;
+import com.vertere.tasktracker.dto.response.TaskAssigneeResponseDTO;
 import com.vertere.tasktracker.dto.response.TaskResponseDTO;
 import com.vertere.tasktracker.entity.Project;
 import com.vertere.tasktracker.entity.Task;
+import com.vertere.tasktracker.entity.User;
 import com.vertere.tasktracker.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.LinkedHashSet;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -37,11 +40,18 @@ public class TaskController {
             task.getTaskStartDate(),
             task.getTaskPriority(),
             task.getTaskTags(),
+            task.getAssignees() == null ? List.of() : task.getAssignees().stream()
+                .map(this::toAssigneeResponse)
+                .toList(),
             task.getAssigneeName(),
             task.getArchived(),
             task.getCreatedAt(),
             task.getUpdatedAt()
         );
+    }
+
+    private TaskAssigneeResponseDTO toAssigneeResponse(User user) {
+        return new TaskAssigneeResponseDTO(user.getUserId(), user.getUserName(), user.getUserEmail());
     }
 
     private Task toEntity(TaskRequestDTO request) {
@@ -58,7 +68,16 @@ public class TaskController {
         task.setTaskStartDate(request.taskStartDate());
         task.setTaskPriority(request.taskPriority() != null ? request.taskPriority() : "Medium");
         task.setTaskTags(request.taskTags());
-        task.setAssigneeName(request.assigneeName());
+        task.setAssignees(new LinkedHashSet<>());
+        if (request.assigneeIds() != null) {
+            request.assigneeIds().stream()
+                .distinct()
+                .forEach(userId -> {
+                    User user = new User();
+                    user.setUserId(userId);
+                    task.getAssignees().add(user);
+                });
+        }
         task.setArchived(Boolean.TRUE.equals(request.archived()));
         return task;
     }

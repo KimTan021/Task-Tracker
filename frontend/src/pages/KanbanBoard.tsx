@@ -144,10 +144,25 @@ const KanbanCard: React.FC<{ task: Task; index: number; isOverlay?: boolean; onE
 
       <div className="mt-auto flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4 py-2 border-t border-[var(--color-outline-variant)]/10">
-            <div className="flex items-center gap-2 min-w-0">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[var(--color-surface-container-highest)] text-[9px] font-black uppercase text-[var(--color-on-surface)] shadow-sm">
-                    {task.assigneeName?.[0] || 'U'}
-                </div>
+            <div className="flex min-w-0 items-center gap-2">
+                {task.assignees.length > 0 ? (
+                  <div className="flex -space-x-2">
+                    {task.assignees.slice(0, 3).map((assignee) => (
+                      <div key={assignee.id} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border-2 border-[var(--color-surface-container-lowest)] bg-[var(--color-surface-container-highest)] text-[9px] font-black uppercase text-[var(--color-on-surface)] shadow-sm">
+                        {assignee.avatar}
+                      </div>
+                    ))}
+                    {task.assignees.length > 3 && (
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border-2 border-[var(--color-surface-container-lowest)] bg-[var(--color-primary)]/10 text-[9px] font-black uppercase text-[var(--color-primary)] shadow-sm">
+                        +{task.assignees.length - 3}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[var(--color-surface-container-highest)] text-[9px] font-black uppercase text-[var(--color-on-surface)] shadow-sm">
+                    U
+                  </div>
+                )}
                 <span className="min-w-0 truncate text-[11px] font-bold text-[var(--color-on-surface-variant)]">
                   {task.assigneeName || 'Unassigned'}
                 </span>

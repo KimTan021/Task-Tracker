@@ -12,7 +12,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskServiceImplementation implements TaskService {
@@ -56,6 +59,44 @@ public class TaskServiceImplementation implements TaskService {
         recipients.forEach(this::broadcastTasksUpdate);
     }
 
+    private LinkedHashSet<User> resolveAssignees(Task task, Project project) {
+        if (task.getAssignees() == null || task.getAssignees().isEmpty()) {
+            task.setAssigneeName("");
+            return new LinkedHashSet<>();
+        }
+
+        List<Integer> assigneeIds = task.getAssignees().stream()
+            .map(User::getUserId)
+            .filter(java.util.Objects::nonNull)
+            .distinct()
+            .toList();
+
+        List<User> resolvedUsers = userRepository.findAllById(assigneeIds);
+        if (resolvedUsers.size() != assigneeIds.size()) {
+            throw new TaskNotFound("One or more assignees were not found.");
+        }
+
+        Set<Integer> projectMemberIds = project.getMembers().stream()
+            .map(User::getUserId)
+            .collect(Collectors.toSet());
+        boolean hasInvalidAssignee = resolvedUsers.stream().anyMatch(user -> !projectMemberIds.contains(user.getUserId()));
+        if (hasInvalidAssignee) {
+            throw new TaskNotFound("Assignees must be collaborators on this project.");
+        }
+
+        LinkedHashSet<User> assignees = assigneeIds.stream()
+            .map(id -> resolvedUsers.stream()
+                .filter(user -> user.getUserId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new TaskNotFound("One or more assignees were not found.")))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        task.setAssigneeName(assignees.stream()
+            .map(User::getUserName)
+            .collect(Collectors.joining(", ")));
+        return assignees;
+    }
+
     @Override
     public List<Task> findAllTasks(){
         return taskRepository.findAccessibleTasks(getCurrentUserEmail());
@@ -82,6 +123,7 @@ public class TaskServiceImplementation implements TaskService {
                     Project newProj = new Project();
                     newProj.setProjectName("Default Workspace");
                     newProj.setUser(user);
+                    newProj.getMembers().add(user);
                     return projectRepository.save(newProj);
                 });
             task.setProject(userProject);
@@ -96,6 +138,7 @@ public class TaskServiceImplementation implements TaskService {
         if (task.getArchived() == null) {
             task.setArchived(false);
         }
+        task.setAssignees(resolveAssignees(task, task.getProject()));
 
         Task saved = taskRepository.save(task);
         broadcastProjectTasksUpdate(saved.getProject());
@@ -121,6 +164,7 @@ public class TaskServiceImplementation implements TaskService {
         if (task.getArchived() == null) {
             task.setArchived(existing.getArchived());
         }
+        task.setAssignees(resolveAssignees(task, existing.getProject()));
         Task saved = taskRepository.save(task);
         broadcastProjectTasksUpdate(saved.getProject());
         return saved;
