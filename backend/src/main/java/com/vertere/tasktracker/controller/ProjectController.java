@@ -66,6 +66,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/members/{userId}/promote")
+    @Operation(summary = "Promote a project member")
     public void promoteMember(@PathVariable Integer projectId, @PathVariable Integer userId, Principal principal) {
         projectService.promoteMember(projectId, userId, principal.getName());
     }
