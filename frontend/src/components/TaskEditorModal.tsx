@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { X, User as UserIcon, Check } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { X, User as UserIcon, Check, Search } from 'lucide-react';
 import type { Priority, Status, Task, TaskInput } from '../hooks/useTaskStore';
 import { useProjectStore } from '../hooks/useProjectStore';
 
@@ -24,6 +24,8 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
   const { currentProject, getMembers } = useProjectStore();
   const [members, setMembers] = useState<any[]>([]);
   const [showAssigneePicker, setShowAssigneePicker] = useState(false);
+  const [assigneeQuery, setAssigneeQuery] = useState('');
+  const assigneePickerRef = useRef<HTMLDivElement | null>(null);
 
   const [form, setForm] = useState<TaskInput>({
     title: '',
@@ -62,7 +64,31 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
       assigneeName: task?.assigneeName || '',
       archived: task?.archived || false,
     });
+    setAssigneeQuery('');
+    setShowAssigneePicker(false);
   }, [initialStatus, isOpen, task]);
+
+  useEffect(() => {
+    if (!showAssigneePicker) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!assigneePickerRef.current?.contains(event.target as Node)) {
+        setShowAssigneePicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, [showAssigneePicker]);
+
+  const filteredMembers = useMemo(() => {
+    const query = assigneeQuery.trim().toLowerCase();
+    if (!query) return members;
+    return members.filter((member) =>
+      member.userName?.toLowerCase().includes(query) ||
+      member.userEmail?.toLowerCase().includes(query)
+    );
+  }, [assigneeQuery, members]);
 
   if (!isOpen) return null;
 
@@ -169,11 +195,14 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                 </div>
               </label>
 
-              <div className="space-y-3 relative">
+              <div ref={assigneePickerRef} className="space-y-3 relative">
                 <span className="block text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Collaborator / Assignee</span>
                 <button
                   type="button"
-                  onClick={() => setShowAssigneePicker(!showAssigneePicker)}
+                  onClick={() => {
+                    setShowAssigneePicker((current) => !current);
+                    setAssigneeQuery('');
+                  }}
                   className="w-full flex items-center justify-between rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 border border-transparent hover:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all text-left"
                 >
                   <div className="flex items-center gap-3">
@@ -188,36 +217,55 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                 </button>
 
                 {showAssigneePicker && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setShowAssigneePicker(false)} />
-                    <div className="absolute top-full mt-2 left-0 w-full bg-white rounded-2xl shadow-xl overflow-hidden z-20 animate-scale-in">
-                      <div className="p-2 space-y-1">
-                        <button
-                          type="button"
-                          onClick={() => { setField('assigneeName', ''); setShowAssigneePicker(false); }}
-                          className="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-[11px] font-black uppercase tracking-widest text-slate-400"
-                        >
-                          Unassign
-                        </button>
-                        {members.map(member => (
+                  <div className="absolute top-full mt-2 left-0 w-full bg-white rounded-2xl shadow-xl overflow-hidden z-20 animate-scale-in">
+                    <div className="border-b border-slate-100 p-3">
+                      <div className="relative">
+                        <input
+                          autoFocus
+                          type="text"
+                          value={assigneeQuery}
+                          onChange={(e) => setAssigneeQuery(e.target.value)}
+                          placeholder="Search collaborator"
+                          className="w-full rounded-2xl bg-slate-50 px-10 py-3 text-sm font-semibold text-slate-700 outline-none transition-all placeholder:text-slate-300 focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10"
+                        />
+                        <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
+                      </div>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto p-2 space-y-1">
+                      <button
+                        type="button"
+                        onClick={() => { setField('assigneeName', ''); setShowAssigneePicker(false); setAssigneeQuery(''); }}
+                        className="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-[11px] font-black uppercase tracking-widest text-slate-400"
+                      >
+                        Unassign
+                      </button>
+                      {filteredMembers.length > 0 ? (
+                        filteredMembers.map(member => (
                           <button
                             key={member.userId}
                             type="button"
-                            onClick={() => { setField('assigneeName', member.userName); setShowAssigneePicker(false); }}
+                            onClick={() => { setField('assigneeName', member.userName); setShowAssigneePicker(false); setAssigneeQuery(''); }}
                             className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
                               form.assigneeName === member.userName ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-slate-50 text-slate-600'
                             }`}
                           >
-                            <div className="flex items-center gap-3">
+                            <div className="flex min-w-0 items-center gap-3">
                               <img src={`https://i.pravatar.cc/150?u=${member.userName}`} className="w-6 h-6 rounded-lg object-cover" alt="" />
-                              <span className="text-[11px] font-black uppercase tracking-widest">{member.userName}</span>
+                              <div className="min-w-0 text-left">
+                                <span className="block truncate text-[11px] font-black uppercase tracking-widest">{member.userName}</span>
+                                <span className="block truncate text-[10px] font-semibold text-slate-400">{member.userEmail}</span>
+                              </div>
                             </div>
-                            {form.assigneeName === member.userName && <Check className="w-4 h-4" />}
+                            {form.assigneeName === member.userName && <Check className="w-4 h-4 shrink-0" />}
                           </button>
-                        ))}
-                      </div>
+                        ))
+                      ) : (
+                        <div className="px-4 py-6 text-center">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">No collaborators match your search</p>
+                        </div>
+                      )}
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
 

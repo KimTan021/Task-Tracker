@@ -1,8 +1,8 @@
 package com.vertere.tasktracker.controller;
 
 import com.vertere.tasktracker.dto.response.ProjectInvitationResponseDTO;
+import com.vertere.tasktracker.dto.response.ProjectMemberResponseDTO;
 import com.vertere.tasktracker.entity.Project;
-import com.vertere.tasktracker.entity.User;
 import com.vertere.tasktracker.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -42,9 +42,9 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a project based on provided id number.")
-    public void deleteProjectById(@PathVariable Integer id){
-        projectService.deleteProjectById(id);
+    @Operation(summary = "Delete a project based on provided id number")
+    public void deleteProjectById(@PathVariable Integer id, Principal principal){
+        projectService.deleteProjectById(id, principal.getName());
     }
 
     @PostMapping("/{projectId}/members")
@@ -55,7 +55,7 @@ public class ProjectController {
 
     @GetMapping("/{projectId}/members")
     @Operation(summary = "Fetch all members of a project.")
-    public java.util.Set<User> getMembers(@PathVariable Integer projectId) {
+    public List<ProjectMemberResponseDTO> getMembers(@PathVariable Integer projectId) {
         return projectService.getMembers(projectId);
     }
 
@@ -63,6 +63,11 @@ public class ProjectController {
     @Operation(summary = "Remove a specified member from the project.")
     public void removeMember(@PathVariable Integer projectId, @PathVariable Integer userId, Principal principal) {
         projectService.removeMember(projectId, userId, principal.getName());
+    }
+
+    @PostMapping("/{projectId}/members/{userId}/promote")
+    public void promoteMember(@PathVariable Integer projectId, @PathVariable Integer userId, Principal principal) {
+        projectService.promoteMember(projectId, userId, principal.getName());
     }
 
     @GetMapping("/user/{userId}")

@@ -81,19 +81,19 @@ export const CardGallery: React.FC = () => {
 
               <div className="flex flex-1 flex-col p-5 md:p-7">
                 <div className="mb-6 flex items-start justify-between gap-4">
-                  <div className="max-w-[70%] text-left">
+                  <div className="min-w-0 flex-1 text-left">
                     <h3 className="mb-2 line-clamp-2 text-lg font-display font-black leading-tight text-[var(--color-on-surface)] transition-colors group-hover:text-[var(--color-primary)] md:text-xl">
                       {asset.title}
                     </h3>
-                    <div className="flex items-center gap-2">
+                    <div className="flex min-w-0 items-center gap-2">
                       <Icon className="h-3.5 w-3.5 text-[var(--color-on-surface-variant)]" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)] opacity-60">
+                      <span className="truncate text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)] opacity-60">
                         {asset.priority} Priority
                       </span>
                     </div>
                   </div>
 
-                  <span className="whitespace-nowrap rounded-xl bg-[var(--color-surface-container-low)] px-3 py-1.5 text-[10px] font-black text-[var(--color-on-surface-variant)] shadow-sm">
+                  <span className="max-w-[44%] shrink-0 rounded-xl bg-[var(--color-surface-container-low)] px-3 py-1.5 text-right text-[10px] font-black leading-tight text-[var(--color-on-surface-variant)] shadow-sm [overflow-wrap:anywhere]">
                     {asset.metadata?.text || 'No date'}
                   </span>
                 </div>
