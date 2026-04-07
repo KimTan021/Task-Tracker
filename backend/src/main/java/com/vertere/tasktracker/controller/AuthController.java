@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication", description = "Endpoints for registration, login, and edit")
 @SecurityRequirement(name = "bearerAuth")
+@org.springframework.web.bind.annotation.CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"})
 public class AuthController {
     private final AuthService authService;
 

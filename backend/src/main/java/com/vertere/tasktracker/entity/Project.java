@@ -4,10 +4,10 @@ package com.vertere.tasktracker.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "project")
 public class Project {
@@ -24,4 +24,12 @@ public class Project {
     @Column(name = "project_name", nullable = false)
     private String projectName;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "project_member",
+        joinColumns = @JoinColumn(name = "project_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @Builder.Default
+    private java.util.Set<User> members = new java.util.HashSet<>();
 }
