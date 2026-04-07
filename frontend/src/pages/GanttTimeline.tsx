@@ -214,12 +214,12 @@ export const GanttTimeline: React.FC = () => {
       <div className="mb-8 flex flex-col gap-6 md:mb-12 md:flex-row md:items-end md:justify-between">
         <div className="animate-fade-in-up">
           <div className="mb-3 flex flex-wrap items-center gap-2 md:mb-4 md:gap-3">
-            <div className="rounded-md bg-[var(--color-primary)] px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-lg shadow-[var(--color-primary)]/20">
+            <div className="rounded-xl bg-[var(--color-primary)] px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-lg shadow-[var(--color-primary)]/20">
               {currentProject?.projectName || 'Project Timeline'}
             </div>
-            <div className="flex items-center gap-1.5 rounded-full bg-[var(--color-surface-container-low)] px-3 py-1 text-[10px] font-black shadow-sm">
+            <div className="flex items-center gap-1.5 rounded-full bg-white/50 backdrop-blur-md border border-[var(--color-outline-variant)]/20 px-3 py-1 text-[10px] font-black shadow-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse"></span>
-              <span className="uppercase tracking-wider text-[var(--color-on-surface-variant)]">Operational</span>
+              <span className="uppercase tracking-widest text-[var(--color-on-surface-variant)]">Operational</span>
             </div>
           </div>
           <h1 className="mb-1 text-3xl font-display font-black italic tracking-tighter text-[var(--color-on-surface)] md:mb-2 md:text-5xl">Timeline.</h1>
@@ -229,34 +229,34 @@ export const GanttTimeline: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3 md:gap-4">
-          <div className="flex items-center rounded-xl bg-[var(--color-surface-container-low)] p-1">
+          <div className="flex items-center rounded-2xl bg-[var(--color-surface-container-low)] p-1.5 shadow-sm border border-[var(--color-outline-variant)]/10">
             <button
               type="button"
               onClick={() => setRangeStart((current) => shiftRange(current, timelineView, -1))}
-              className="rounded-lg p-2 text-[var(--color-on-surface-variant)] transition-all hover:bg-[var(--color-surface-container-lowest)] hover:text-[var(--color-on-surface)]"
+              className="rounded-xl p-2 text-[var(--color-on-surface-variant)] transition-all hover:bg-white hover:text-[var(--color-primary)] hover:shadow-sm active:scale-95"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <div className="px-3 text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface)] md:px-4 md:text-xs">
+            <div className="px-4 text-[10px] font-black uppercase tracking-widest text-[var(--color-on-surface)] md:text-[11px]">
               {formatHeaderLabel(rangeStart, rangeEnd, timelineView)}
             </div>
             <button
               type="button"
               onClick={() => setRangeStart((current) => shiftRange(current, timelineView, 1))}
-              className="rounded-lg p-2 text-[var(--color-on-surface-variant)] transition-all hover:bg-[var(--color-surface-container-lowest)] hover:text-[var(--color-on-surface)]"
+              className="rounded-xl p-2 text-[var(--color-on-surface-variant)] transition-all hover:bg-white hover:text-[var(--color-primary)] hover:shadow-sm active:scale-95"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
 
-          <div className="hidden items-center rounded-xl bg-[var(--color-surface-container-low)] p-1 sm:flex">
+          <div className="hidden items-center rounded-2xl bg-[var(--color-surface-container-low)] p-1.5 sm:flex shadow-sm border border-[var(--color-outline-variant)]/10">
             {(['day', 'week', 'month'] as TimelineView[]).map((view) => (
               <button
                 key={view}
                 type="button"
                 onClick={() => setTimelineView(view)}
-                className={`rounded-lg px-3 py-2 text-[10px] font-black tracking-wider transition-all duration-300 md:px-5 md:text-xs ${
-                  timelineView === view ? 'bg-[var(--color-surface-container-lowest)] text-[var(--color-on-surface)] shadow-sm' : 'text-[var(--color-on-surface-variant)]'
+                className={`rounded-xl px-4 py-2 text-[10px] font-black tracking-widest transition-all duration-300 md:text-[11px] active:scale-95 ${
+                  timelineView === view ? 'bg-white text-[var(--color-primary)] shadow-md' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
                 }`}
               >
                 {view.toUpperCase()}
@@ -266,25 +266,25 @@ export const GanttTimeline: React.FC = () => {
         </div>
       </div>
 
-      <section className="mb-8 rounded-[2rem] bg-[var(--color-surface-container-low)] p-5 shadow-[0_20px_40px_rgba(28,27,27,0.04)] md:p-6">
+      <section className="mb-12 rounded-[2rem] bg-white/40 backdrop-blur-sm p-6 shadow-sm border border-[var(--color-outline-variant)]/20">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.5fr)_repeat(2,minmax(180px,0.7fr))_auto]">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-on-surface-variant)]/30 group-focus-within:text-[var(--color-primary)] transition-colors" />
             <input
               type="text"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search tasks, assignees, or tags"
-              className="w-full rounded-2xl bg-white px-12 py-4 text-sm font-semibold text-slate-700 outline-none transition-all placeholder:text-slate-300 focus-visible:ring-4 focus-visible:ring-indigo-500/10"
+              placeholder="Search tasks, assignees, or tags..."
+              className="w-full rounded-2xl bg-white border border-[var(--color-outline-variant)]/40 px-12 py-4 text-sm font-bold text-[var(--color-on-surface)] outline-none transition-all placeholder:text-[var(--color-on-surface-variant)]/30 focus:ring-4 focus:ring-[var(--color-primary)]/5 focus:border-[var(--color-primary)] shadow-sm"
             />
           </div>
 
-          <label className="flex items-center gap-3 rounded-2xl bg-white px-4 py-4">
-            <Filter className="h-4 w-4 text-slate-300" />
+          <label className="flex items-center gap-3 rounded-2xl bg-white border border-[var(--color-outline-variant)]/40 px-4 py-4 shadow-sm focus-within:border-[var(--color-primary)] transition-all">
+            <Filter className="h-4 w-4 text-[var(--color-on-surface-variant)]/30" />
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value as Status | 'all')}
-              className="w-full bg-transparent text-sm font-semibold text-slate-700 outline-none"
+              className="w-full bg-transparent text-sm font-bold text-[var(--color-on-surface)] outline-none"
             >
               {STATUS_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>{option.label}</option>
@@ -292,12 +292,12 @@ export const GanttTimeline: React.FC = () => {
             </select>
           </label>
 
-          <label className="flex items-center gap-3 rounded-2xl bg-white px-4 py-4">
-            <CalendarRange className="h-4 w-4 text-slate-300" />
+          <label className="flex items-center gap-3 rounded-2xl bg-white border border-[var(--color-outline-variant)]/40 px-4 py-4 shadow-sm focus-within:border-[var(--color-primary)] transition-all">
+            <CalendarRange className="h-4 w-4 text-[var(--color-on-surface-variant)]/30" />
             <select
               value={priorityFilter}
               onChange={(event) => setPriorityFilter(event.target.value as Priority | 'all')}
-              className="w-full bg-transparent text-sm font-semibold text-slate-700 outline-none"
+              className="w-full bg-transparent text-sm font-bold text-[var(--color-on-surface)] outline-none"
             >
               {PRIORITY_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>{option.label}</option>
@@ -305,13 +305,13 @@ export const GanttTimeline: React.FC = () => {
             </select>
           </label>
 
-          <label className="flex items-center justify-between rounded-2xl bg-white px-4 py-4">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Include Pending</span>
+          <label className="flex items-center justify-between rounded-2xl bg-white border border-[var(--color-outline-variant)]/40 px-6 py-4 shadow-sm">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)] opacity-60">Include Unscheduled</span>
             <input
               type="checkbox"
               checked={includeUnscheduled}
               onChange={(event) => setIncludeUnscheduled(event.target.checked)}
-              className="h-4 w-4 accent-[var(--color-primary)]"
+              className="h-4 w-4 accent-[var(--color-primary)] cursor-pointer"
             />
           </label>
         </div>
@@ -396,10 +396,10 @@ export const GanttTimeline: React.FC = () => {
                           </div>
                         ) : (
                           <div
-                            className={`absolute top-4 h-7 overflow-hidden rounded-full shadow-inner transition-all md:top-6 md:h-8 ${isCompleted ? 'bg-slate-100' : 'bg-[var(--color-surface-container-low)]'}`}
+                            className={`absolute top-4 h-7 overflow-hidden rounded-full shadow-inner transition-all md:top-6 md:h-8 ${isCompleted ? 'bg-emerald-50/50 border border-emerald-100/50' : 'bg-[var(--color-surface-container-low)]'}`}
                             style={{ left: `${left}px`, width: `${width}px` }}
                           >
-                            <div className={`relative h-full rounded-full ${isCompleted ? 'w-full bg-slate-400 opacity-40' : 'w-full bg-kinetic-animate shadow-[0_0_20px_rgba(53,37,205,0.18)]'}`}>
+                            <div className={`relative h-full rounded-full ${isCompleted ? 'w-full bg-gradient-to-r from-emerald-400 to-teal-400 opacity-60' : 'w-full bg-kinetic-animate shadow-[0_0_20px_rgba(53,37,205,0.18)]'}`}>
                               {!isCompleted && <div className="absolute inset-0 animate-pulse bg-white/20"></div>}
                             </div>
                           </div>

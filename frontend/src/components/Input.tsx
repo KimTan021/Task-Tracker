@@ -24,7 +24,7 @@ export const Input: React.FC<InputProps> = ({ label, error, icon, className = ''
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
           className={`w-full ${icon ? 'pl-11' : 'pl-4'} pr-4 py-4 bg-[var(--color-surface-container-low)] text-[var(--color-on-surface)] transition-all duration-300 outline-none
-            rounded-t-lg border-b-2 focus:bg-[var(--color-surface-container-lowest)] focus:border-b-[var(--color-primary)] focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/8
+            rounded-2xl border-b-2 focus:bg-[var(--color-surface-container-lowest)] focus:border-b-[var(--color-primary)] focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/8
             ${error ? 'border-b-2 border-b-red-500 bg-red-50' : 'border-b-2 border-b-transparent'}
           `}
           {...props}

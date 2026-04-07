@@ -14,6 +14,7 @@ export const DashboardLayout: React.FC = () => {
   const [projectSelectorOpen, setProjectSelectorOpen] = useState(false);
   const [creationModalOpen, setCreationModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const { userId, userName, logout: authLogout } = useAuthStore();
   const { projects, currentProject, isLoading: isProjectLoading, fetchProjects, setCurrentProject, deleteProject, reset: resetProjects } = useProjectStore();
@@ -54,7 +55,7 @@ export const DashboardLayout: React.FC = () => {
     <Link 
       to={to}
       onClick={() => setSidebarOpen(false)}
-      className={`flex items-center gap-3 px-4 py-3 font-bold rounded-xl transition-all relative group ${
+      className={`flex items-center gap-3 px-4 py-3 font-bold rounded-2xl transition-all relative group ${
         active 
           ? 'bg-[var(--color-surface-container-lowest)] text-[var(--color-primary)] shadow-[0_10px_20px_rgba(53,37,205,0.05)]' 
           : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-on-surface)]'
@@ -159,19 +160,46 @@ export const DashboardLayout: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3 md:gap-6">
-          <button type="button" aria-disabled="true" title="Notifications are not available yet" className="p-3 rounded-2xl bg-[var(--color-surface-container-low)] text-[var(--color-on-surface-variant)] transition-all shadow-sm relative opacity-70 cursor-not-allowed">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white animate-pulse"></span>
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setNotificationsOpen(!notificationsOpen)}
+              className="p-3 rounded-2xl bg-[var(--color-surface-container-low)] text-[var(--color-on-surface-variant)] transition-all hover:bg-[var(--color-surface-container-lowest)] hover:shadow-md relative"
+            >
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white animate-pulse"></span>
+            </button>
+
+            {notificationsOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setNotificationsOpen(false)} />
+                <div className="absolute top-full mt-3 right-0 w-80 bg-[var(--color-surface-container-lowest)] rounded-3xl shadow-[0_24px_60px_rgba(28,27,27,0.12)] p-6 z-20 animate-scale-in">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-[var(--color-on-surface)]">Signal Stream</h3>
+                    <span className="text-[9px] font-bold text-[var(--color-primary)] uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded-full">Live</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <div className="w-12 h-12 bg-[var(--color-surface-container-low)] rounded-2xl flex items-center justify-center text-[var(--color-on-surface-variant)]/30 mb-4">
+                      <Bell className="w-6 h-6" />
+                    </div>
+                    <p className="text-[11px] font-bold text-[var(--color-on-surface-variant)] uppercase tracking-widest mb-1">No Active Signals</p>
+                    <p className="text-[9px] font-medium text-[var(--color-on-surface-variant)]/50 uppercase tracking-widest leading-relaxed">Your workspace is currently <br/>in sync with the monolith.</p>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           
           <div className="flex items-center gap-3 pl-3">
             <div className="hidden md:flex flex-col items-end">
                 <span className="text-[11px] font-black uppercase tracking-widest text-[var(--color-on-surface)] truncate max-w-[120px]">
                   {userName || 'Kim Tan'}
                 </span>
-                <span className="text-[9px] font-bold text-[var(--color-on-surface-variant)]/50 uppercase tracking-widest truncate max-w-[120px]">
-                   {currentProject?.user.userId === userId ? 'Architect' : 'Collaborator'}
-                </span>
+                <button 
+                  onClick={handleLogout}
+                  className="text-[9px] font-bold text-rose-500 hover:text-rose-600 uppercase tracking-widest truncate max-w-[120px] transition-colors"
+                >
+                   Terminate Session
+                </button>
             </div>
             <img alt="User profile avatar" className="w-10 h-10 md:w-12 md:h-12 rounded-2xl object-cover shadow-[0_12px_28px_rgba(28,27,27,0.12)] transition-transform hover:scale-105" src={`https://i.pravatar.cc/150?u=${userName || 'kim'}`} />
           </div>
@@ -188,11 +216,12 @@ export const DashboardLayout: React.FC = () => {
 
       {/* SideNavBar */}
       <aside className={`
-        fixed left-0 top-0 h-full w-72 bg-[rgba(246,243,242,0.86)] backdrop-blur-2xl flex flex-col p-6 pt-24 pb-10 space-y-3 z-50 shadow-[10px_0_40px_rgba(28,27,27,0.04)]
+        fixed left-0 top-0 h-full w-72 bg-[rgba(246,243,242,0.86)] backdrop-blur-2xl flex flex-col z-50 shadow-[10px_0_40px_rgba(28,27,27,0.04)]
         transition-transform duration-500 cubic-bezier(0.175, 0.885, 0.32, 1.275)
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:z-30
       `}>
+        <div className="flex flex-col h-full overflow-y-auto custom-scrollbar p-6 pt-20 pb-8 space-y-6">
         {/* Mobile close button */}
         <button 
           className="lg:hidden absolute top-6 right-6 p-2.5 rounded-xl bg-slate-100 text-[var(--color-on-surface-variant)]"
@@ -201,7 +230,7 @@ export const DashboardLayout: React.FC = () => {
           <X className="w-5 h-5" />
         </button>
 
-        <div className="px-2 mb-8">
+        <div className="px-2">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Core Systems</p>
             <nav className="space-y-1.5">
             <NavItem to="/board" icon={ClipboardList} label="Workspace Board" active={currentPath === '/board' || currentPath === '/'} />
@@ -211,7 +240,7 @@ export const DashboardLayout: React.FC = () => {
             </nav>
         </div>
         
-        <div className="flex-1 px-2 overflow-y-auto custom-scrollbar">
+        <div className="px-2">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Active Contexts</p>
             <div className="space-y-2">
                 {projects.slice(0, 5).map(p => (
@@ -231,33 +260,38 @@ export const DashboardLayout: React.FC = () => {
             </div>
         </div>
         
-        <div className="pt-8 pb-6 space-y-2 px-2">
+        <div className="pt-2 pb-2 space-y-4 px-2">
           <button 
             onClick={() => setCreationModalOpen(true)}
-            className="w-full mb-6 group py-4 px-6 bg-[var(--color-primary)] text-white rounded-[1.25rem] font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl hover:shadow-[0_20px_40px_rgba(53,37,205,0.2)] hover:-translate-y-1 transition-all active:scale-95"
+            className="w-full mb-2 group py-4 px-6 bg-[var(--color-primary)] text-white rounded-[1.25rem] font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl hover:shadow-[0_20px_40px_rgba(53,37,205,0.2)] hover:-translate-y-1 transition-all active:scale-95"
           >
             <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
             Initiate Project
           </button>
           
-          <div className="grid grid-cols-2 gap-2">
-            <button type="button" disabled title="Support is not available yet" className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl opacity-55 cursor-not-allowed">
-                <HelpCircle className="w-5 h-5 text-slate-400 group-hover:text-[var(--color-primary)] transition-colors mb-1" />
-                <span className="text-[9px] font-black uppercase text-slate-500">Support</span>
-            </button>
-            <button type="button" disabled title="Vault is not available yet" className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl opacity-55 cursor-not-allowed">
-                <Archive className="w-5 h-5 text-slate-400 group-hover:text-[var(--color-primary)] transition-colors mb-1" />
-                <span className="text-[9px] font-black uppercase text-slate-500">Vault</span>
+          <div className="p-4 bg-[var(--color-surface-container-low)]/50 rounded-[2rem] border border-[var(--color-outline-variant)]/10">
+            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 text-center">Infrastructure</p>
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <button type="button" disabled title="Support is not available yet" className="flex flex-col items-center justify-center p-3 bg-white/50 rounded-2xl opacity-60 cursor-not-allowed group transition-all">
+                  <HelpCircle className="w-4 h-4 text-slate-400 mb-1" />
+                  <span className="text-[8px] font-black uppercase text-slate-500 tracking-tighter">Support</span>
+              </button>
+              <button type="button" disabled title="Vault is not available yet" className="flex flex-col items-center justify-center p-3 bg-white/50 rounded-2xl opacity-60 cursor-not-allowed group transition-all">
+                  <Archive className="w-4 h-4 text-slate-400 mb-1" />
+                  <span className="text-[8px] font-black uppercase text-slate-500 tracking-tighter">Vault</span>
+              </button>
+            </div>
+            
+            <button 
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white/50 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[10px] uppercase tracking-widest transition-all shadow-sm"
+            >
+                <LogOut className="w-3.5 h-3.5" />
+                Terminate Session
             </button>
           </div>
           
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-50 font-bold transition-all mt-4 mb-4"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="text-[13px] tracking-tight">Terminate Session</span>
-          </button>
+        </div>
         </div>
       </aside>
 

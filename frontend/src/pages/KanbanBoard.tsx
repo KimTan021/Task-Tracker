@@ -78,9 +78,9 @@ const KanbanCard: React.FC<{ task: Task; index: number; isOverlay?: boolean; onE
     <div
       ref={setNodeRef}
       className={`
-        relative w-full min-w-0 max-w-full overflow-hidden rounded-[1.75rem] p-5 md:p-6 transition-all duration-500 group hover-card
+        relative w-full min-w-0 max-w-full overflow-hidden rounded-[1.75rem] p-5 transition-all duration-500 group hover-card
         ${isOverlay ? 'shadow-2xl scale-105 z-50 ring-4 ring-[var(--color-primary)]/20 bg-white' : ''}
-        ${isCompleted ? 'bg-[rgba(255,255,255,0.75)] opacity-70 hover:opacity-100' : 'bg-[var(--color-surface-container-lowest)] shadow-[0_18px_40px_rgba(28,27,27,0.05)]'}
+        ${isCompleted ? 'bg-gradient-to-br from-emerald-50/50 to-teal-50/50 opacity-90 hover:opacity-100 border border-emerald-100/50' : 'bg-[var(--color-surface-container-lowest)] shadow-[0_18px_40px_rgba(28,27,27,0.05)]'}
         ${isHighPriority && !isCompleted ? 'animate-glow' : ''}
       `}
       style={isOverlay ? style : { animationDelay: `${index * 100}ms`, ...style }}
@@ -119,12 +119,12 @@ const KanbanCard: React.FC<{ task: Task; index: number; isOverlay?: boolean; onE
         </div>
       </div>
 
-      <h4 className={`mb-3 min-w-0 max-w-full break-words [overflow-wrap:anywhere] font-display text-lg font-black leading-tight tracking-tight md:text-[1.35rem] ${isCompleted ? 'text-[var(--color-on-surface-variant)] line-through opacity-50' : 'text-[var(--color-on-surface)]'}`}>
+      <h4 className={`mb-3 min-w-0 max-w-full break-words [overflow-wrap:anywhere] font-display text-lg font-extrabold leading-[1.2] tracking-tight md:text-[1.25rem] ${isCompleted ? 'text-emerald-900/40 line-through' : 'text-[var(--color-on-surface)]'}`}>
         {task.title}
       </h4>
 
       {task.description && (
-        <p className="mb-5 min-w-0 max-w-full break-words [overflow-wrap:anywhere] line-clamp-3 text-sm font-medium leading-relaxed text-[var(--color-on-surface-variant)]/78">
+        <p className="mb-5 min-w-0 max-w-full break-words [overflow-wrap:anywhere] line-clamp-2 text-[13px] font-medium leading-relaxed text-[var(--color-on-surface-variant)]/70">
           {task.description}
         </p>
       )}
@@ -142,32 +142,28 @@ const KanbanCard: React.FC<{ task: Task; index: number; isOverlay?: boolean; onE
         )}
       </div>
 
-      <div className="mt-auto grid min-w-0 grid-cols-2 gap-3 text-left">
-        <div className="min-w-0 rounded-2xl bg-[var(--color-surface-container-low)] px-4 py-3">
-            <div className="mb-1 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]/55">Assignee</div>
-            <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--color-surface-container-highest)] text-[11px] font-black uppercase text-[var(--color-on-surface)] shadow-sm">
+      <div className="mt-auto flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-4 py-2 border-t border-[var(--color-outline-variant)]/10">
+            <div className="flex items-center gap-2 min-w-0">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[var(--color-surface-container-highest)] text-[9px] font-black uppercase text-[var(--color-on-surface)] shadow-sm">
                     {task.assigneeName?.[0] || 'U'}
                 </div>
-                <span className="min-w-0 truncate text-sm font-semibold text-[var(--color-on-surface)]">
+                <span className="min-w-0 truncate text-[11px] font-bold text-[var(--color-on-surface-variant)]">
                   {task.assigneeName || 'Unassigned'}
                 </span>
             </div>
+            
+            <div className="flex items-center gap-1.5 shrink-0 px-2 py-1 bg-[var(--color-surface-container-low)] rounded-lg">
+                <Icon className="h-3 w-3 text-[var(--color-on-surface-variant)]/60" />
+                <span className="text-[10px] font-bold text-[var(--color-on-surface-variant)]">{dueLabel}</span>
+            </div>
         </div>
 
-        <div className="min-w-0 rounded-2xl bg-[var(--color-surface-container-low)] px-4 py-3">
-          <div className="mb-1 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]/55">Timeline</div>
-          <div className="flex min-w-0 items-center gap-2">
-            <Icon className="h-4 w-4 text-[var(--color-on-surface-variant)] opacity-60" />
-            <span className="min-w-0 truncate text-sm font-semibold text-[var(--color-on-surface)]">{dueLabel}</span>
-          </div>
-        </div>
-
-        <div className="col-span-2 flex min-w-0 items-center justify-between gap-3 rounded-2xl bg-[rgba(246,243,242,0.75)] px-4 py-3">
-          <span className="min-w-0 shrink-0 text-[10px] font-black uppercase tracking-[0.22em] text-[var(--color-on-surface-variant)]/62">
+        <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-xl bg-[var(--color-surface-container-low)]/50">
+          <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-on-surface-variant)]/40">
             {task.status.replace('_', ' ')}
           </span>
-          <span className="min-w-0 truncate text-right text-xs font-semibold text-[var(--color-on-surface-variant)]">{task.metadata.text}</span>
+          <span className="truncate text-right text-[10px] font-bold text-[var(--color-on-surface-variant)] opacity-70">{task.metadata.text}</span>
         </div>
       </div>
     </div>
@@ -305,12 +301,15 @@ export const KanbanBoard: React.FC = () => {
                       <KanbanCard key={task.id} task={task} index={index} onEdit={setEditingTask} />
                     ))}
                     {columnTasks.length === 0 && (
-                      <div className="flex flex-1 flex-col items-center justify-center rounded-[1.75rem] bg-[rgba(255,255,255,0.45)] p-10 text-center transition-all opacity-70">
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white transition-transform shadow-sm">
-                            <PlusCircle className="w-5 h-5 text-[var(--color-outline-variant)]" />
+                      <button 
+                        onClick={() => { setCreateStatus(column.id); setIsCreating(true); }}
+                        className="flex flex-1 flex-col items-center justify-center rounded-[1.75rem] bg-[rgba(255,255,255,0.45)] border-2 border-dashed border-[var(--color-outline-variant)]/20 p-10 text-center transition-all hover:bg-white hover:border-[var(--color-primary)]/30 group/empty"
+                      >
+                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white transition-transform group-hover/empty:scale-110 shadow-sm border border-slate-100">
+                            <PlusCircle className="w-5 h-5 text-[var(--color-primary)] opacity-40 group-hover/empty:opacity-100 transition-opacity" />
                         </div>
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">{searchTerm ? 'No matches' : 'Drop tasks here'}</span>
-                      </div>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] group-hover/empty:text-[var(--color-primary)] transition-colors">Allocate Task</span>
+                      </button>
                     )}
                   </DroppableColumn>
                 </div>

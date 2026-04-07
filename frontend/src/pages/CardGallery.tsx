@@ -18,33 +18,33 @@ export const CardGallery: React.FC = () => {
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[var(--color-primary)]/10 px-3 py-1">
             <ImageIcon className="h-3.5 w-3.5 text-[var(--color-primary)]" />
             <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-primary)]">
-              {currentProject?.projectName || 'Task Visualizer'}
+              {currentProject?.projectName || 'Workspace Visualizer'}
             </span>
           </div>
-          <h1 className="mb-1 text-3xl font-display font-black italic tracking-tighter text-[var(--color-on-surface)] md:mb-2 md:text-5xl">Gallery.</h1>
+          <h1 className="mb-1 text-3xl font-display font-black italic tracking-tighter text-[var(--color-on-surface)] md:mb-2 md:text-5xl">Space Visualizer.</h1>
           <p className="text-sm font-medium text-[var(--color-on-surface-variant)] opacity-70 md:text-base">
-            A visual browse view of tasks in the selected project.
+            High-fidelity visual browse of active project streams.
           </p>
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center rounded-xl bg-[var(--color-surface-container-low)] p-1">
-            <button type="button" className="flex items-center gap-2 rounded-lg bg-[var(--color-surface-container-lowest)] px-5 py-2.5 text-xs font-black tracking-wider text-[var(--color-on-surface)] shadow-sm">
+          <div className="flex items-center rounded-2xl bg-[var(--color-surface-container-low)] p-1.5 shadow-sm border border-[var(--color-outline-variant)]/10">
+            <button type="button" className="flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-xs font-black tracking-widest text-[var(--color-primary)] shadow-md">
               <Grid className="h-4 w-4" /> GRID
             </button>
-            <button type="button" disabled title="List view is not available yet" className="flex cursor-not-allowed items-center gap-2 rounded-lg px-5 py-2.5 text-xs font-black tracking-wider text-[var(--color-on-surface-variant)]/45">
+            <button type="button" disabled title="List view mapping pending" className="flex cursor-not-allowed items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-black tracking-widest text-[var(--color-on-surface-variant)]/30 transition-all hover:text-[var(--color-on-surface)]">
               <List className="h-4 w-4" /> LIST
             </button>
           </div>
 
-          <div className="mx-2 h-8 w-px bg-[var(--color-outline-variant)]/40"></div>
+          <div className="mx-2 h-8 w-px bg-[var(--color-outline-variant)]/20"></div>
 
-          <button type="button" disabled title="Search is not available yet" className="cursor-not-allowed rounded-xl bg-[var(--color-surface-container-lowest)] p-3 text-[var(--color-on-surface)]/45 shadow-sm">
-            <Search className="h-5 w-5" />
+          <button type="button" disabled title="Deep Search Protocol Pending" className="group/btn cursor-not-allowed rounded-2xl bg-white border border-[var(--color-outline-variant)]/40 p-3.5 text-[var(--color-on-surface-variant)]/30 shadow-sm transition-all hover:border-[var(--color-primary)]/30">
+            <Search className="h-5 w-5 group-hover/btn:text-[var(--color-primary)] transition-colors" />
           </button>
 
-          <button type="button" disabled title="Asset creation is not available yet" className="cursor-not-allowed rounded-xl bg-[var(--color-primary)] p-3 text-white/70 shadow-lg shadow-[var(--color-primary)]/20">
-            <Plus className="h-5 w-5" />
+          <button type="button" disabled title="Stream Initiation Pending" className="group/btn cursor-not-allowed rounded-2xl bg-[var(--color-primary)] p-3.5 text-white shadow-lg shadow-[var(--color-primary)]/20 active:scale-95 transition-all">
+            <Plus className="h-5 w-5 group-hover/btn:rotate-90 transition-transform" />
           </button>
         </div>
       </div>
@@ -56,7 +56,7 @@ export const CardGallery: React.FC = () => {
           return (
             <div
               key={asset.id}
-              className={`group flex cursor-pointer flex-col overflow-hidden rounded-[2rem] bg-[var(--color-surface-container-lowest)] shadow-[0_24px_48px_rgba(28,27,27,0.05)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_40px_80px_rgba(28,27,27,0.08)] animate-fade-in-up ${asset.status === 'completed' ? 'grayscale-[0.8] opacity-70 hover:grayscale-0 hover:opacity-100' : ''}`}
+              className={`group flex cursor-pointer flex-col overflow-hidden rounded-[2.25rem] bg-[var(--color-surface-container-lowest)] shadow-[0_24px_48px_rgba(28,27,27,0.05)] transition-all duration-700 hover:-translate-y-2 hover:shadow-[0_40px_80px_rgba(28,27,27,0.08)] animate-fade-in-up ${asset.status === 'completed' ? 'bg-gradient-to-br from-emerald-50/50 to-teal-50/50' : ''}`}
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-[var(--color-surface-container-low)]">
@@ -98,23 +98,31 @@ export const CardGallery: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between rounded-2xl bg-[var(--color-surface-container-low)] px-4 py-3">
-                  <div className="flex -space-x-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-[10px] font-bold text-[var(--color-primary)]">
-                      {asset.assigneeName?.[0] || 'U'}
+                <div className="mt-auto flex flex-col gap-4">
+                  <div className="flex items-center justify-between gap-4 py-2 border-t border-[var(--color-outline-variant)]/10">
+                    <div className="flex items-center gap-2 min-w-0">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[var(--color-surface-container-highest)] text-[9px] font-black uppercase text-[var(--color-on-surface)] shadow-sm">
+                            {asset.assigneeName?.[0] || 'U'}
+                        </div>
+                        <span className="min-w-0 truncate text-[11px] font-bold text-[var(--color-on-surface-variant)]">
+                          {asset.assigneeName || 'Unassigned'}
+                        </span>
+                    </div>
+                    
+                    <div className="px-2 py-1 bg-[var(--color-surface-container-low)] rounded-lg">
+                        <span className="text-[10px] font-bold text-[var(--color-on-surface-variant)] opacity-60 italic">{asset.priority}</span>
                     </div>
                   </div>
 
-                  {asset.status === 'in_progress' ? (
-                    <div className="flex items-center gap-2 rounded-lg bg-[var(--color-primary)]/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-[var(--color-primary)]">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)] shadow-[0_0_8px_var(--color-primary)]"></span>
-                      Interactive
+                  <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-xl bg-[var(--color-surface-container-low)]/50">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-on-surface-variant)]/40">
+                      {asset.status.replace('_', ' ')}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)] animate-pulse shadow-[0_0_8px_var(--color-primary)]"></span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-primary)]">Active</span>
                     </div>
-                  ) : (
-                    <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-[var(--color-on-surface-variant)] opacity-40">
-                      Vaulted
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
