@@ -15,6 +15,7 @@ export interface Project {
     userId: number;
     userName: string;
     userEmail: string;
+    role?: string;
   }>;
 }
 
@@ -40,9 +41,11 @@ interface ProjectState {
   fetchProjects: (userId: number) => Promise<void>;
   createProject: (name: string, description: string, userId: number) => Promise<Project>;
   setCurrentProject: (project: Project | null) => void;
+  deleteProject: (projectId: number) => Promise<void>;
   addMember: (projectId: number, username: string) => Promise<ProjectInvitation>;
   getMembers: (projectId: number) => Promise<any[]>;
   removeMember: (projectId: number, userId: number) => Promise<void>;
+  promoteMember: (projectId: number, userId: number) => Promise<void>;
   getPendingInvitations: (userId: number) => Promise<ProjectInvitation[]>;
   getPendingInvitationsForProject: (projectId: number) => Promise<ProjectInvitation[]>;
   acceptInvitation: (invitationId: number) => Promise<void>;
@@ -103,6 +106,27 @@ export const useProjectStore = create<ProjectState>()(
         set({ currentProject: project });
       },
 
+      deleteProject: async (projectId) => {
+        set({ isLoading: true, error: null });
+        try {
+          await api.delete(`/api/project/${projectId}`);
+          set((state) => {
+            const projects = state.projects.filter((project) => project.projectId !== projectId);
+            const currentProject = state.currentProject?.projectId === projectId
+              ? projects[0] || null
+              : state.currentProject;
+            return {
+              projects,
+              currentProject,
+              isLoading: false,
+            };
+          });
+        } catch (error: any) {
+          set({ isLoading: false, error: error.response?.data?.message || 'Failed to delete project' });
+          throw error;
+        }
+      },
+
       addMember: async (projectId, username) => {
         set({ isLoading: true, error: null });
         try {
@@ -134,6 +158,17 @@ export const useProjectStore = create<ProjectState>()(
           set({ isLoading: false });
         } catch (error: any) {
           set({ isLoading: false, error: error.response?.data?.message || 'Failed to remove member' });
+          throw error;
+        }
+      },
+
+      promoteMember: async (projectId, userId) => {
+        set({ isLoading: true, error: null });
+        try {
+          await api.post(`/api/project/${projectId}/members/${userId}/promote`);
+          set({ isLoading: false });
+        } catch (error: any) {
+          set({ isLoading: false, error: error.response?.data?.message || 'Failed to promote collaborator' });
           throw error;
         }
       },

@@ -35,7 +35,7 @@ const DroppableColumn: React.FC<{ id: Status; children: React.ReactNode }> = ({ 
   return (
     <div
       ref={setNodeRef}
-      className={`flex min-h-[560px] min-w-[310px] flex-col gap-4 rounded-[2rem] p-4 transition-all duration-500 ${
+      className={`flex min-h-[560px] w-[310px] min-w-[310px] max-w-[310px] flex-col gap-4 rounded-[2rem] p-4 transition-all duration-500 ${
         isOver
           ? 'bg-[rgba(79,70,229,0.08)] shadow-[0_0_0_1px_rgba(79,70,229,0.08),0_18px_38px_rgba(53,37,205,0.08)]'
           : 'bg-[var(--color-surface-container-low)] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]'
@@ -78,7 +78,7 @@ const KanbanCard: React.FC<{ task: Task; index: number; isOverlay?: boolean; onE
     <div
       ref={setNodeRef}
       className={`
-        relative overflow-hidden rounded-[1.75rem] p-5 md:p-6 transition-all duration-500 group hover-card
+        relative w-full min-w-0 max-w-full overflow-hidden rounded-[1.75rem] p-5 md:p-6 transition-all duration-500 group hover-card
         ${isOverlay ? 'shadow-2xl scale-105 z-50 ring-4 ring-[var(--color-primary)]/20 bg-white' : ''}
         ${isCompleted ? 'bg-[rgba(255,255,255,0.75)] opacity-70 hover:opacity-100' : 'bg-[var(--color-surface-container-lowest)] shadow-[0_18px_40px_rgba(28,27,27,0.05)]'}
         ${isHighPriority && !isCompleted ? 'animate-glow' : ''}
@@ -91,7 +91,7 @@ const KanbanCard: React.FC<{ task: Task; index: number; isOverlay?: boolean; onE
         style={{ backgroundColor: `hsl(${statusColor})` }}
       ></div>
 
-      <div className="mb-5 flex items-start justify-between gap-4">
+      <div className="mb-5 flex min-w-0 items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-2">
             <span className={`
                 ${priorityClasses[task.priority]} 
@@ -119,12 +119,12 @@ const KanbanCard: React.FC<{ task: Task; index: number; isOverlay?: boolean; onE
         </div>
       </div>
 
-      <h4 className={`mb-3 font-display text-lg font-black leading-tight tracking-tight md:text-[1.35rem] ${isCompleted ? 'text-[var(--color-on-surface-variant)] line-through opacity-50' : 'text-[var(--color-on-surface)]'}`}>
+      <h4 className={`mb-3 min-w-0 max-w-full break-words [overflow-wrap:anywhere] font-display text-lg font-black leading-tight tracking-tight md:text-[1.35rem] ${isCompleted ? 'text-[var(--color-on-surface-variant)] line-through opacity-50' : 'text-[var(--color-on-surface)]'}`}>
         {task.title}
       </h4>
 
       {task.description && (
-        <p className="mb-5 line-clamp-3 text-sm font-medium leading-relaxed text-[var(--color-on-surface-variant)]/78">
+        <p className="mb-5 min-w-0 max-w-full break-words [overflow-wrap:anywhere] line-clamp-3 text-sm font-medium leading-relaxed text-[var(--color-on-surface-variant)]/78">
           {task.description}
         </p>
       )}
@@ -142,10 +142,10 @@ const KanbanCard: React.FC<{ task: Task; index: number; isOverlay?: boolean; onE
         )}
       </div>
 
-      <div className="mt-auto grid grid-cols-2 gap-3 text-left">
-        <div className="rounded-2xl bg-[var(--color-surface-container-low)] px-4 py-3">
+      <div className="mt-auto grid min-w-0 grid-cols-2 gap-3 text-left">
+        <div className="min-w-0 rounded-2xl bg-[var(--color-surface-container-low)] px-4 py-3">
             <div className="mb-1 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]/55">Assignee</div>
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--color-surface-container-highest)] text-[11px] font-black uppercase text-[var(--color-on-surface)] shadow-sm">
                     {task.assigneeName?.[0] || 'U'}
                 </div>
@@ -155,19 +155,19 @@ const KanbanCard: React.FC<{ task: Task; index: number; isOverlay?: boolean; onE
             </div>
         </div>
 
-        <div className="rounded-2xl bg-[var(--color-surface-container-low)] px-4 py-3">
+        <div className="min-w-0 rounded-2xl bg-[var(--color-surface-container-low)] px-4 py-3">
           <div className="mb-1 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]/55">Timeline</div>
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <Icon className="h-4 w-4 text-[var(--color-on-surface-variant)] opacity-60" />
-            <span className="text-sm font-semibold text-[var(--color-on-surface)]">{dueLabel}</span>
+            <span className="min-w-0 truncate text-sm font-semibold text-[var(--color-on-surface)]">{dueLabel}</span>
           </div>
         </div>
 
-        <div className="col-span-2 flex items-center justify-between rounded-2xl bg-[rgba(246,243,242,0.75)] px-4 py-3">
-          <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--color-on-surface-variant)]/62">
+        <div className="col-span-2 flex min-w-0 items-center justify-between gap-3 rounded-2xl bg-[rgba(246,243,242,0.75)] px-4 py-3">
+          <span className="min-w-0 shrink-0 text-[10px] font-black uppercase tracking-[0.22em] text-[var(--color-on-surface-variant)]/62">
             {task.status.replace('_', ' ')}
           </span>
-          <span className="text-xs font-semibold text-[var(--color-on-surface-variant)]">{task.metadata.text}</span>
+          <span className="min-w-0 truncate text-right text-xs font-semibold text-[var(--color-on-surface-variant)]">{task.metadata.text}</span>
         </div>
       </div>
     </div>
@@ -287,7 +287,7 @@ export const KanbanBoard: React.FC = () => {
 
             return (
               <SortableContext key={column.id} id={column.id} items={columnTasks.map((task) => task.id)} strategy={verticalListSortingStrategy}>
-                <div className="flex flex-col gap-8 animate-fade-in-up" style={{ animationDelay: `${colIdx * 150}ms` }}>
+                <div className="flex w-[310px] min-w-[310px] max-w-[310px] flex-col gap-8 animate-fade-in-up" style={{ animationDelay: `${colIdx * 150}ms` }}>
                   {/* Fixed Header Alignment Area */}
                   <div className="space-y-4 px-2">
                     <ColumnHeader title={column.title} count={columnTasks.length} badgeColor={column.badgeColor} onCreate={() => { setCreateStatus(column.id); setIsCreating(true); }} />

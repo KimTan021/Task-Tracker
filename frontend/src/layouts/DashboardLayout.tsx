@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router';
-import { Grid, Bell, Users, Settings, Plus, HelpCircle, Archive, ClipboardList, Layout, Menu, X, ChevronDown, Check, LogOut } from 'lucide-react';
+import { Grid, Bell, Users, Settings, Plus, HelpCircle, Archive, ClipboardList, Layout, Menu, X, ChevronDown, Check, LogOut, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../hooks/useAuthStore';
 import { useProjectStore } from '../hooks/useProjectStore';
+import { useTaskStore } from '../hooks/useTaskStore';
 import { ProjectCreationModal } from '../components/ProjectCreationModal';
+import { DeleteProjectModal } from '../components/DeleteProjectModal';
 
 export const DashboardLayout: React.FC = () => {
   const location = useLocation();
@@ -11,9 +13,11 @@ export const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [projectSelectorOpen, setProjectSelectorOpen] = useState(false);
   const [creationModalOpen, setCreationModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const { userId, userName, logout: authLogout } = useAuthStore();
-  const { projects, currentProject, fetchProjects, setCurrentProject, reset: resetProjects } = useProjectStore();
+  const { projects, currentProject, isLoading: isProjectLoading, fetchProjects, setCurrentProject, deleteProject, reset: resetProjects } = useProjectStore();
+  const { fetchTasks } = useTaskStore();
 
   const handleLogout = () => {
     authLogout();
@@ -25,6 +29,26 @@ export const DashboardLayout: React.FC = () => {
       fetchProjects(userId);
     }
   }, [userId, fetchProjects]);
+
+  useEffect(() => {
+    if (currentProject) {
+      void fetchTasks(currentProject.projectId);
+      return;
+    }
+    void fetchTasks();
+  }, [currentProject, fetchTasks]);
+
+  const handleDeleteProject = async () => {
+    if (!currentProject || currentProject.user.userId !== userId) return;
+
+    try {
+      await deleteProject(currentProject.projectId);
+      setProjectSelectorOpen(false);
+      setDeleteModalOpen(false);
+    } catch (error) {
+      console.error('Failed to delete project', error);
+    }
+  };
 
   const NavItem = ({ to, icon: Icon, label, active }: { to: string, icon: any, label: string, active: boolean }) => (
     <Link 
@@ -116,6 +140,17 @@ export const DashboardLayout: React.FC = () => {
                     >
                       <Plus className="w-4 h-4" /> Initiate New Context
                     </button>
+                    {currentProject?.user.userId === userId ? (
+                      <button
+                        onClick={() => {
+                          setProjectSelectorOpen(false);
+                          setDeleteModalOpen(true);
+                        }}
+                        className="mt-2 w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-rose-500 hover:bg-rose-50 font-black text-[10px] uppercase tracking-widest transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" /> Delete Current Project
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               </>
@@ -153,7 +188,7 @@ export const DashboardLayout: React.FC = () => {
 
       {/* SideNavBar */}
       <aside className={`
-        fixed left-0 top-0 h-full w-72 bg-[rgba(246,243,242,0.86)] backdrop-blur-2xl flex flex-col p-6 pt-24 space-y-3 z-50 shadow-[10px_0_40px_rgba(28,27,27,0.04)]
+        fixed left-0 top-0 h-full w-72 bg-[rgba(246,243,242,0.86)] backdrop-blur-2xl flex flex-col p-6 pt-24 pb-10 space-y-3 z-50 shadow-[10px_0_40px_rgba(28,27,27,0.04)]
         transition-transform duration-500 cubic-bezier(0.175, 0.885, 0.32, 1.275)
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:z-30
@@ -196,7 +231,7 @@ export const DashboardLayout: React.FC = () => {
             </div>
         </div>
         
-        <div className="pt-8 space-y-2 px-2">
+        <div className="pt-8 pb-6 space-y-2 px-2">
           <button 
             onClick={() => setCreationModalOpen(true)}
             className="w-full mb-6 group py-4 px-6 bg-[var(--color-primary)] text-white rounded-[1.25rem] font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl hover:shadow-[0_20px_40px_rgba(53,37,205,0.2)] hover:-translate-y-1 transition-all active:scale-95"
@@ -218,7 +253,7 @@ export const DashboardLayout: React.FC = () => {
           
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-50 font-bold transition-all mt-4"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-50 font-bold transition-all mt-4 mb-4"
           >
             <LogOut className="w-5 h-5" />
             <span className="text-[13px] tracking-tight">Terminate Session</span>
@@ -234,6 +269,13 @@ export const DashboardLayout: React.FC = () => {
       <ProjectCreationModal 
         isOpen={creationModalOpen} 
         onClose={() => setCreationModalOpen(false)} 
+      />
+      <DeleteProjectModal
+        isOpen={deleteModalOpen}
+        project={currentProject}
+        isDeleting={isProjectLoading}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteProject}
       />
     </div>
   );

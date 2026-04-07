@@ -1,6 +1,7 @@
 package com.vertere.tasktracker.service.implementation;
 
 import com.vertere.tasktracker.dto.response.ProjectInvitationResponseDTO;
+import com.vertere.tasktracker.dto.response.ProjectMemberResponseDTO;
 import com.vertere.tasktracker.entity.Project;
 import com.vertere.tasktracker.entity.ProjectInvitation;
 import com.vertere.tasktracker.entity.User;
@@ -60,17 +61,30 @@ public class ProjectServiceImplementation implements ProjectService {
             User managedUser = userRepository.findById(project.getUser().getUserId())
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Owner not found"));
             project.setUser(managedUser);
-            if (project.getMembers() == null) {
-                project.setMembers(new java.util.HashSet<>());
-            }
-            project.getMembers().add(managedUser);
+        if (project.getMembers() == null) {
+            project.setMembers(new java.util.HashSet<>());
+        }
+        if (project.getCoOwners() == null) {
+            project.setCoOwners(new java.util.HashSet<>());
+        }
+        project.getMembers().add(managedUser);
         }
         return projectRepository.save(project);
     }
 
     @Override
-    public void deleteProjectById(Integer projectId){
+    public void deleteProjectById(Integer projectId, String requesterEmail){
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Project not found"));
+        User requester = userRepository.findByUserEmail(requesterEmail)
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Requester not found"));
+
+        if (!project.getUser().getUserId().equals(requester.getUserId())) {
+            throw new ResponseStatusException(FORBIDDEN, "Only the project owner can delete this project");
+        }
+
         projectRepository.deleteById(projectId);
+        broadcastProjectTasksUpdate(project, null);
     }
 
     @Override
@@ -82,8 +96,8 @@ public class ProjectServiceImplementation implements ProjectService {
         User inviter = userRepository.findByUserEmail(inviterEmail)
             .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Inviter not found"));
 
-        if (!project.getUser().getUserId().equals(inviter.getUserId())) {
-            throw new ResponseStatusException(FORBIDDEN, "Only the project owner can invite collaborators");
+        if (!canInvite(project, inviter)) {
+            throw new ResponseStatusException(FORBIDDEN, "Only the project owner or co-architect can invite collaborators");
         }
         if (project.getUser().getUserId().equals(invitedUser.getUserId())) {
             throw new ResponseStatusException(BAD_REQUEST, "Project owner is already part of this project");
@@ -124,10 +138,13 @@ public class ProjectServiceImplementation implements ProjectService {
     }
 
     @Override
-    public Set<User> getMembers(Integer projectId) {
+    public List<ProjectMemberResponseDTO> getMembers(Integer projectId) {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Project not found"));
-        return project.getMembers();
+        return project.getMembers().stream()
+            .map(member -> toProjectMemberResponse(project, member))
+            .sorted(java.util.Comparator.comparing(ProjectMemberResponseDTO::role).thenComparing(ProjectMemberResponseDTO::userName, String.CASE_INSENSITIVE_ORDER))
+            .toList();
     }
 
     @Override
@@ -150,10 +167,40 @@ public class ProjectServiceImplementation implements ProjectService {
         if (!removed) {
             throw new ResponseStatusException(NOT_FOUND, "Collaborator not found in this project");
         }
+        project.getCoOwners().removeIf(existingCoOwner -> existingCoOwner.getUserId().equals(userId));
 
         taskRepository.clearAssignmentsForProjectMember(projectId, userId);
         projectRepository.save(project);
         broadcastProjectTasksUpdate(project, member.getUserEmail());
+    }
+
+    @Override
+    public void promoteMember(Integer projectId, Integer userId, String requesterEmail) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Project not found"));
+        User requester = userRepository.findByUserEmail(requesterEmail)
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Requester not found"));
+
+        if (!project.getUser().getUserId().equals(requester.getUserId())) {
+            throw new ResponseStatusException(FORBIDDEN, "Only the project owner can promote collaborators");
+        }
+        if (project.getUser().getUserId().equals(userId)) {
+            throw new ResponseStatusException(BAD_REQUEST, "Project owner already has full access");
+        }
+
+        User member = userRepository.findById(userId)
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
+        boolean isMember = project.getMembers().stream().anyMatch(existingMember -> existingMember.getUserId().equals(userId));
+        if (!isMember) {
+            throw new ResponseStatusException(NOT_FOUND, "Collaborator not found in this project");
+        }
+        boolean alreadyCoOwner = project.getCoOwners().stream().anyMatch(existingCoOwner -> existingCoOwner.getUserId().equals(userId));
+        if (alreadyCoOwner) {
+            throw new ResponseStatusException(CONFLICT, "Collaborator is already a co-architect");
+        }
+
+        project.getCoOwners().add(member);
+        projectRepository.save(project);
     }
 
     @Override
@@ -218,6 +265,27 @@ public class ProjectServiceImplementation implements ProjectService {
             invitation.getStatus(),
             invitation.getCreatedAt()
         );
+    }
+
+    private ProjectMemberResponseDTO toProjectMemberResponse(Project project, User member) {
+        String role = "COLLABORATOR";
+        if (project.getUser().getUserId().equals(member.getUserId())) {
+            role = "OWNER";
+        } else if (project.getCoOwners().stream().anyMatch(coOwner -> coOwner.getUserId().equals(member.getUserId()))) {
+            role = "CO_OWNER";
+        }
+
+        return new ProjectMemberResponseDTO(
+            member.getUserId(),
+            member.getUserName(),
+            member.getUserEmail(),
+            role
+        );
+    }
+
+    private boolean canInvite(Project project, User user) {
+        return project.getUser().getUserId().equals(user.getUserId()) ||
+            project.getCoOwners().stream().anyMatch(coOwner -> coOwner.getUserId().equals(user.getUserId()));
     }
 
     private void broadcastProjectTasksUpdate(Project project, String additionalRecipientEmail) {

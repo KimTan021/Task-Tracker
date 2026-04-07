@@ -35,4 +35,13 @@ public class Project {
     )
     @Builder.Default
     private java.util.Set<User> members = new java.util.HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "project_co_owner",
+        joinColumns = @JoinColumn(name = "project_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @Builder.Default
+    private java.util.Set<User> coOwners = new java.util.HashSet<>();
 }

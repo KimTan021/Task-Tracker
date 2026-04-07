@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Search, UserPlus, Shield, Users, Mail, Loader2, Inbox, CheckCheck, Clock3, UserMinus, XCircle } from 'lucide-react';
+import { Search, UserPlus, Shield, Users, Mail, Loader2, Inbox, CheckCheck, Clock3, UserMinus, XCircle, ArrowUpCircle } from 'lucide-react';
 import { useAuthStore } from '../hooks/useAuthStore';
 import { useProjectStore } from '../hooks/useProjectStore';
 import { useTaskStore } from '../hooks/useTaskStore';
+import { PromoteCollaboratorModal } from '../components/PromoteCollaboratorModal';
 import api from '../services/api';
 
 interface SearchResult {
@@ -15,6 +16,7 @@ interface Member {
   userId: number;
   userName: string;
   userEmail: string;
+  role: string;
 }
 
 interface Invitation {
@@ -32,7 +34,7 @@ interface Invitation {
 
 export const Collaborators: React.FC = () => {
   const { userId } = useAuthStore();
-  const { currentProject, addMember, getMembers, removeMember, getPendingInvitations, getPendingInvitationsForProject, acceptInvitation, rejectInvitation, fetchProjects } = useProjectStore();
+  const { currentProject, addMember, getMembers, removeMember, promoteMember, getPendingInvitations, getPendingInvitationsForProject, acceptInvitation, rejectInvitation, fetchProjects } = useProjectStore();
   const { fetchTasks } = useTaskStore();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -46,8 +48,12 @@ export const Collaborators: React.FC = () => {
   const [isAcceptingInvitationId, setIsAcceptingInvitationId] = useState<number | null>(null);
   const [isRejectingInvitationId, setIsRejectingInvitationId] = useState<number | null>(null);
   const [isRemovingMemberId, setIsRemovingMemberId] = useState<number | null>(null);
+  const [isPromotingMemberId, setIsPromotingMemberId] = useState<number | null>(null);
+  const [promotionCandidate, setPromotionCandidate] = useState<Member | null>(null);
 
   const isProjectOwner = currentProject && userId ? currentProject.user.userId === userId : false;
+  const currentMembership = members.find((member) => member.userId === userId);
+  const canInviteMembers = isProjectOwner || currentMembership?.role === 'CO_OWNER';
 
   useEffect(() => {
     void loadPendingUserInvites();
@@ -175,6 +181,20 @@ export const Collaborators: React.FC = () => {
     }
   };
 
+  const handlePromoteMember = async (member: Member) => {
+    if (!currentProject) return;
+    setIsPromotingMemberId(member.userId);
+    try {
+      await promoteMember(currentProject.projectId, member.userId);
+      await loadMembers();
+    } catch (error) {
+      console.error('Failed to promote collaborator', error);
+    } finally {
+      setIsPromotingMemberId(null);
+      setPromotionCandidate(null);
+    }
+  };
+
   const handleRejectInvitation = async (invitationId: number) => {
     if (!userId) return;
     setIsRejectingInvitationId(invitationId);
@@ -289,11 +309,13 @@ export const Collaborators: React.FC = () => {
               <p className="mt-3 text-sm leading-relaxed text-[var(--color-on-surface-variant)]/78">
                 {isProjectOwner
                   ? 'Invite teammates by username. They appear as collaborators only after they accept.'
-                  : 'Only the project owner can send collaborator invites for this project.'}
+                  : canInviteMembers
+                    ? 'As a co-architect, you can also invite collaborators into this project.'
+                    : 'Only the project owner and co-architects can send collaborator invites for this project.'}
               </p>
             </div>
 
-            {isProjectOwner ? (
+            {canInviteMembers ? (
               <div className="group relative">
                 <input
                   type="text"
@@ -309,7 +331,7 @@ export const Collaborators: React.FC = () => {
           </div>
 
           <div className="space-y-3">
-            {isProjectOwner ? (
+            {canInviteMembers ? (
               searchResults.length > 0 ? (
                 searchResults.map((user) => (
                   <div
@@ -346,7 +368,7 @@ export const Collaborators: React.FC = () => {
               )
             ) : (
               <div className="rounded-3xl bg-white/70 p-8 text-center">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Invite controls are limited to the project owner</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Invite controls are limited to the project owner and co-architects</p>
               </div>
             )}
           </div>
@@ -408,10 +430,10 @@ export const Collaborators: React.FC = () => {
                       <div className="flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-[8px] font-black uppercase tracking-widest text-rose-500">
                         <Shield className="h-3 w-3" /> Architect
                       </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <div className="rounded-full bg-indigo-50 px-3 py-1 text-[8px] font-black uppercase tracking-widest text-indigo-500">
-                          Collaborator
+                    ) : member.role === 'CO_OWNER' ? (
+                      <div className="flex max-w-full flex-wrap justify-end gap-2">
+                        <div className="flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[8px] font-black uppercase tracking-widest text-amber-600">
+                          <Shield className="h-3 w-3" /> Co-Architect
                         </div>
                         {isProjectOwner ? (
                           <button
@@ -424,6 +446,36 @@ export const Collaborators: React.FC = () => {
                             {isRemovingMemberId === member.userId ? <Loader2 className="h-3 w-3 animate-spin" /> : <UserMinus className="h-3 w-3" />}
                             Remove
                           </button>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <div className="flex max-w-full flex-col items-end gap-2">
+                        <div className="rounded-full bg-indigo-50 px-3 py-1 text-[8px] font-black uppercase tracking-widest text-indigo-500">
+                          Collaborator
+                        </div>
+                        {isProjectOwner ? (
+                          <div className="flex flex-wrap justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setPromotionCandidate(member)}
+                              disabled={isPromotingMemberId === member.userId}
+                              className="flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-[8px] font-black uppercase tracking-widest text-amber-600 transition-all hover:bg-amber-500 hover:text-white disabled:cursor-wait disabled:opacity-70"
+                              title="Promote to co-architect"
+                            >
+                              {isPromotingMemberId === member.userId ? <Loader2 className="h-3 w-3 animate-spin" /> : <ArrowUpCircle className="h-3 w-3" />}
+                              Promote
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void handleRemoveMember(member)}
+                              disabled={isRemovingMemberId === member.userId}
+                              className="flex items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-[8px] font-black uppercase tracking-widest text-rose-500 transition-all hover:bg-rose-500 hover:text-white disabled:cursor-wait disabled:opacity-70"
+                              title="Remove collaborator"
+                            >
+                              {isRemovingMemberId === member.userId ? <Loader2 className="h-3 w-3 animate-spin" /> : <UserMinus className="h-3 w-3" />}
+                              Remove
+                            </button>
+                          </div>
                         ) : null}
                       </div>
                     )}
@@ -445,7 +497,11 @@ export const Collaborators: React.FC = () => {
                       <div className="mt-4 rounded-2xl bg-[var(--color-surface-container-low)] px-4 py-3">
                         <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Access</p>
                         <p className="mt-1 text-sm font-semibold leading-relaxed text-slate-700">
-                          {member.userId === currentProject.user.userId ? 'Owns this project and can manage team membership.' : 'Can collaborate on shared tasks and view project activity.'}
+                          {member.userId === currentProject.user.userId
+                            ? 'Owns this project and can manage team membership.'
+                            : member.role === 'CO_OWNER'
+                              ? 'Can invite collaborators and work as a co-architect on this project.'
+                              : 'Can collaborate on shared tasks and view project activity.'}
                         </p>
                       </div>
                     </div>
@@ -466,6 +522,16 @@ export const Collaborators: React.FC = () => {
           <p className="mt-2 text-xs font-bold uppercase tracking-widest text-slate-400">Select or initiate a project to manage collaborators</p>
         </div>
       )}
+      <PromoteCollaboratorModal
+        isOpen={Boolean(promotionCandidate)}
+        member={promotionCandidate}
+        isPromoting={promotionCandidate ? isPromotingMemberId === promotionCandidate.userId : false}
+        onClose={() => setPromotionCandidate(null)}
+        onConfirm={async () => {
+          if (!promotionCandidate) return;
+          await handlePromoteMember(promotionCandidate);
+        }}
+      />
     </div>
   );
 };
