@@ -31,7 +31,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 403 || error.response?.status === 401) {
       // Final Fix: Don't logout on the login attempt itself to avoid loops
-      if (error.config?.url?.includes('/auth/login')) {
+      if (error.config?.url?.includes('/api/auth/login')) {
          return Promise.reject(error);
       }
 

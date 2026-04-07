@@ -52,7 +52,7 @@ export const Collaborators: React.FC = () => {
 
     setIsSearching(true);
     try {
-      const response = await api.get('/users/search', { params: { query } });
+      const response = await api.get('/api/users/search', { params: { query } });
       const currentMemberIds = new Set(members.map((member) => member.userId));
       setSearchResults(response.data.filter((user: SearchResult) => !currentMemberIds.has(user.userId)));
     } catch (error) {

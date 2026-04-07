@@ -171,7 +171,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   fetchTasks: async (projectId?: number) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api.get('/tasks');
+      const response = await api.get('/api/tasks');
       const tasks = response.data
         .filter((task: Record<string, any>) => !projectId || task.projectId === projectId)
         .map(mapDbTaskToUI);
@@ -195,7 +195,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         projectId: currentProject.projectId,
       };
       
-      const response = await api.post('/tasks', payload);
+      const response = await api.post('/api/tasks', payload);
       const created = mapDbTaskToUI(response.data);
       set((state) => ({ tasks: [...state.tasks, created], isLoading: false }));
       return created;
@@ -210,7 +210,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     if (!existing) return null;
 
     try {
-      const response = await api.put(`/tasks/${id}`, toPayload(updates, existing));
+      const response = await api.put(`/api/tasks/${id}`, toPayload(updates, existing));
       const updated = mapDbTaskToUI(response.data);
       set((state) => ({ tasks: state.tasks.map((task) => task.id === id ? updated : task) }));
       return updated;

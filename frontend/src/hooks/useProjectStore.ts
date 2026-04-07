@@ -43,7 +43,7 @@ export const useProjectStore = create<ProjectState>()(
       fetchProjects: async (userId) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await api.get(`/project/user/${userId}`);
+          const response = await api.get(`/api/project/user/${userId}`);
           const projects = response.data;
           set({ 
             projects, 
@@ -59,7 +59,7 @@ export const useProjectStore = create<ProjectState>()(
       createProject: async (name, userId) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await api.post('/project', {
+          const response = await api.post('/api/project', {
             projectName: name,
             user: { userId }
           });
@@ -86,7 +86,7 @@ export const useProjectStore = create<ProjectState>()(
       addMember: async (projectId, username) => {
         set({ isLoading: true, error: null });
         try {
-          await api.post(`/project/${projectId}/members`, null, {
+          await api.post(`/api/project/${projectId}/members`, null, {
             params: { username }
           });
           set({ isLoading: false });
@@ -98,7 +98,7 @@ export const useProjectStore = create<ProjectState>()(
 
       getMembers: async (projectId) => {
         try {
-          const response = await api.get(`/project/${projectId}/members`);
+          const response = await api.get(`/api/project/${projectId}/members`);
           return response.data;
         } catch (error) {
           console.error('Failed to get members', error);
