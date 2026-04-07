@@ -146,7 +146,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       onConnect: () => {
         stompClient.subscribe(`/topic/workspace-${email}`, (message: IMessage) => {
           if (message.body === 'UPDATED') {
-            void get().fetchTasks();
+            const projectId = useProjectStore.getState().currentProject?.projectId;
+            void get().fetchTasks(projectId);
           }
         });
       },

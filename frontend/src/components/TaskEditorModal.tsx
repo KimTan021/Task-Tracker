@@ -86,15 +86,15 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
 
   return (
     <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-md p-4 md:p-8 flex items-center justify-center animate-fade-in">
-      <div className="w-full max-w-2xl bg-white rounded-[2.5rem] border border-[var(--glass-border)] shadow-[0_40px_100px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col max-h-[90vh] md:max-h-[85vh] animate-scale-in">
+      <div className="w-full max-w-2xl bg-[var(--color-surface-container-lowest)] rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col max-h-[90vh] md:max-h-[85vh] animate-scale-in">
         {/* Sticky Header */}
-        <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-8 py-6 flex-shrink-0">
           <div>
             <h2 className="text-2xl font-display font-black tracking-tighter text-[var(--color-on-surface)] uppercase italic">
                 {mode === 'create' ? 'Assemble.Task' : 'Refine.Task'}
             </h2>
             <div className="flex items-center gap-2 mt-1">
-               <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{currentProject?.projectName}</span>
+               <span className="max-w-[220px] truncate text-[10px] font-black text-indigo-600 uppercase tracking-widest">{currentProject?.projectName}</span>
                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status: {form.status?.replace('_', ' ') || 'TODO'}</p>
             </div>
@@ -102,7 +102,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
           <button 
             type="button" 
             onClick={onClose} 
-            className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all active:scale-90"
+            className="w-12 h-12 rounded-2xl flex items-center justify-center bg-[var(--color-surface-container-low)] text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all active:scale-90"
           >
             <X className="w-6 h-6" />
           </button>
@@ -117,7 +117,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                 <input 
                     value={form.title} 
                     onChange={(e) => setField('title', e.target.value)} 
-                    className="w-full rounded-2xl bg-slate-50 px-6 py-4 outline-none border border-transparent focus:border-[var(--color-primary)]/30 focus:bg-white focus:shadow-inner transition-all font-bold text-slate-700" 
+                    className="w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700" 
                     placeholder="e.g., Structural Facade Optimization" 
                     required
                 />
@@ -128,7 +128,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                 <textarea 
                     value={form.description} 
                     onChange={(e) => setField('description', e.target.value)} 
-                    className="w-full min-h-[120px] rounded-2xl bg-slate-50 px-6 py-4 outline-none border border-transparent focus:border-[var(--color-primary)]/30 focus:bg-white focus:shadow-inner transition-all font-medium text-slate-600 resize-none leading-relaxed" 
+                    className="w-full min-h-[120px] rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-medium text-slate-600 resize-none leading-relaxed" 
                     placeholder="Outline the parameters, dependencies, and intended output..." 
                 />
               </label>
@@ -139,7 +139,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                     <select 
                         value={form.status} 
                         onChange={(e) => setField('status', e.target.value as Status)} 
-                        className="w-full appearance-none rounded-2xl bg-slate-50 px-6 py-4 outline-none border border-transparent focus:border-[var(--color-primary)]/30 focus:bg-white transition-all font-bold text-slate-700 cursor-pointer"
+                        className="w-full appearance-none rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700 cursor-pointer"
                     >
                         {['todo', 'in_progress', 'review', 'completed'].map((status) => (
                         <option key={status} value={status}>{status.replace('_', ' ').toUpperCase()}</option>
@@ -157,7 +157,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                     <select 
                         value={form.priority} 
                         onChange={(e) => setField('priority', e.target.value as Priority)} 
-                        className="w-full appearance-none rounded-2xl bg-slate-50 px-6 py-4 outline-none border border-transparent focus:border-[var(--color-primary)]/30 focus:bg-white transition-all font-bold text-slate-700 cursor-pointer"
+                        className="w-full appearance-none rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700 cursor-pointer"
                     >
                         {['High', 'Medium', 'Low'].map((priority) => (
                         <option key={priority} value={priority}>{priority.toUpperCase()}</option>
@@ -174,7 +174,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                 <button
                   type="button"
                   onClick={() => setShowAssigneePicker(!showAssigneePicker)}
-                  className="w-full flex items-center justify-between rounded-2xl bg-slate-50 px-6 py-4 border border-transparent hover:border-indigo-500/20 hover:bg-white transition-all text-left"
+                  className="w-full flex items-center justify-between rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 border border-transparent hover:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all text-left"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
@@ -190,7 +190,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                 {showAssigneePicker && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowAssigneePicker(false)} />
-                    <div className="absolute top-full mt-2 left-0 w-full bg-white rounded-2xl border border-slate-100 shadow-xl overflow-hidden z-20 animate-scale-in">
+                    <div className="absolute top-full mt-2 left-0 w-full bg-white rounded-2xl shadow-xl overflow-hidden z-20 animate-scale-in">
                       <div className="p-2 space-y-1">
                         <button
                           type="button"
@@ -226,7 +226,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                 <input 
                     value={(form.tags || []).join(', ')} 
                     onChange={(e) => setField('tags', e.target.value.split(',').map((tag) => tag.trim()).filter(Boolean))} 
-                    className="w-full rounded-2xl bg-slate-50 px-6 py-4 outline-none border border-transparent focus:border-[var(--color-primary)]/30 focus:bg-white transition-all font-bold text-slate-700" 
+                    className="w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700" 
                     placeholder="tag1, tag2..." 
                 />
               </label>
@@ -237,7 +237,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                     type="datetime-local" 
                     value={form.startDate || ''} 
                     onChange={(e) => setField('startDate', e.target.value)} 
-                    className="w-full rounded-2xl bg-slate-50 px-6 py-4 outline-none border border-transparent focus:border-[var(--color-primary)]/30 focus:bg-white transition-all font-bold text-slate-700" 
+                    className="w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700" 
                 />
               </label>
 
@@ -247,7 +247,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                     type="datetime-local" 
                     value={form.dueDate || ''} 
                     onChange={(e) => setField('dueDate', e.target.value)} 
-                    className="w-full rounded-2xl bg-slate-50 px-6 py-4 outline-none border border-transparent focus:border-[var(--color-primary)]/30 focus:bg-white transition-all font-bold text-slate-700" 
+                    className="w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700" 
                 />
               </label>
               
@@ -269,7 +269,7 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
           </div>
 
           {/* Sticky Footer */}
-          <div className="px-8 py-6 border-t border-slate-100 bg-slate-50/50 backdrop-blur-md flex items-center justify-between flex-shrink-0">
+          <div className="px-8 py-6 bg-[var(--color-surface-container-low)]/85 backdrop-blur-md flex items-center justify-between flex-shrink-0">
             <button 
                 type="button" 
                 onClick={onClose}

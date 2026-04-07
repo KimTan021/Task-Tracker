@@ -47,7 +47,7 @@ export const DashboardLayout: React.FC = () => {
   return (
     <div className="bg-[var(--color-surface)] min-h-screen text-[var(--color-on-surface)] font-sans antialiased overflow-hidden flex selection:bg-[var(--color-primary)] selection:text-white">
       {/* TopAppBar */}
-      <header className="fixed top-0 w-full z-40 flex justify-between items-center px-4 md:px-8 h-16 md:h-20 bg-white/70 backdrop-blur-xl border-b border-[var(--glass-border)]">
+      <header className="fixed top-0 w-full z-40 flex justify-between items-center px-4 md:px-8 h-16 md:h-20 bg-[rgba(252,249,248,0.82)] backdrop-blur-xl shadow-[0_10px_30px_rgba(28,27,27,0.04)]">
         <div className="flex items-center gap-4 md:gap-12">
           {/* Mobile hamburger */}
           <button 
@@ -68,13 +68,13 @@ export const DashboardLayout: React.FC = () => {
           <div className="relative">
             <button 
               onClick={() => setProjectSelectorOpen(!projectSelectorOpen)}
-              className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-50 border border-slate-100/50 hover:bg-white hover:shadow-xl transition-all group"
+              className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-[var(--color-surface-container-low)] hover:bg-[var(--color-surface-container-lowest)] hover:shadow-[0_18px_36px_rgba(28,27,27,0.06)] transition-all group"
             >
               <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
-              <span className="text-xs font-black uppercase tracking-widest text-slate-500">
+              <span className="max-w-[180px] truncate text-xs font-black uppercase tracking-widest text-[var(--color-on-surface-variant)]">
                 {currentProject?.projectName || 'Select Project'}
               </span>
-              <ChevronDown className={`w-4 h-4 text-slate-300 transition-transform duration-300 ${projectSelectorOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 text-[var(--color-on-surface-variant)]/35 transition-transform duration-300 ${projectSelectorOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {projectSelectorOpen && (
@@ -83,9 +83,9 @@ export const DashboardLayout: React.FC = () => {
                   className="fixed inset-0 z-10" 
                   onClick={() => setProjectSelectorOpen(false)}
                 />
-                <div className="absolute top-full mt-3 left-0 w-64 bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_rgba(0,0,0,0.1)] py-4 z-20 animate-scale-in">
-                  <div className="px-6 pb-3 border-b border-slate-50 mb-3">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Available Flux Channels</p>
+                <div className="absolute top-full mt-3 left-0 w-72 bg-[var(--color-surface-container-lowest)] rounded-3xl shadow-[0_24px_60px_rgba(28,27,27,0.09)] py-4 z-20 animate-scale-in">
+                  <div className="px-6 pb-3 mb-3">
+                    <p className="text-[10px] font-black text-[var(--color-on-surface-variant)]/55 uppercase tracking-widest">Available Flux Channels</p>
                   </div>
                   <div className="max-h-64 overflow-y-auto custom-scrollbar px-2 space-y-1">
                     {projects.map(project => (
@@ -97,8 +97,8 @@ export const DashboardLayout: React.FC = () => {
                         }}
                         className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all ${
                           currentProject?.projectId === project.projectId 
-                            ? 'bg-indigo-50 text-indigo-600' 
-                            : 'hover:bg-slate-50 text-slate-500'
+                            ? 'bg-[var(--color-surface-container-low)] text-[var(--color-primary)] shadow-[0_10px_24px_rgba(53,37,205,0.08)]' 
+                            : 'hover:bg-[var(--color-surface-container-low)] text-[var(--color-on-surface-variant)]'
                         }`}
                       >
                         <span className="text-[11px] font-black uppercase tracking-widest truncate">{project.projectName}</span>
@@ -106,7 +106,7 @@ export const DashboardLayout: React.FC = () => {
                       </button>
                     ))}
                   </div>
-                  <div className="px-2 pt-3 mt-3 border-t border-slate-50">
+                  <div className="px-2 pt-3 mt-3">
                     <button 
                       onClick={() => {
                         setProjectSelectorOpen(false);
@@ -124,12 +124,12 @@ export const DashboardLayout: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3 md:gap-6">
-          <button className="p-3 rounded-2xl bg-[var(--color-surface-container-low)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-primary)] hover:text-white transition-all shadow-sm relative">
+          <button type="button" aria-disabled="true" title="Notifications are not available yet" className="p-3 rounded-2xl bg-[var(--color-surface-container-low)] text-[var(--color-on-surface-variant)] transition-all shadow-sm relative opacity-70 cursor-not-allowed">
             <Bell className="w-5 h-5" />
             <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white animate-pulse"></span>
           </button>
           
-          <div className="flex items-center gap-3 pl-3 border-l border-[var(--color-outline-variant)]/30">
+          <div className="flex items-center gap-3 pl-3">
             <div className="hidden md:flex flex-col items-end">
                 <span className="text-[11px] font-black uppercase tracking-widest text-[var(--color-on-surface)] truncate max-w-[120px]">
                   {userName || 'Kim Tan'}
@@ -138,7 +138,7 @@ export const DashboardLayout: React.FC = () => {
                    {currentProject?.user.userId === userId ? 'Architect' : 'Collaborator'}
                 </span>
             </div>
-            <img alt="User profile avatar" className="w-10 h-10 md:w-12 md:h-12 rounded-2xl object-cover border-2 border-white shadow-md transition-transform hover:scale-105" src={`https://i.pravatar.cc/150?u=${userName || 'kim'}`} />
+            <img alt="User profile avatar" className="w-10 h-10 md:w-12 md:h-12 rounded-2xl object-cover shadow-[0_12px_28px_rgba(28,27,27,0.12)] transition-transform hover:scale-105" src={`https://i.pravatar.cc/150?u=${userName || 'kim'}`} />
           </div>
         </div>
       </header>
@@ -153,7 +153,7 @@ export const DashboardLayout: React.FC = () => {
 
       {/* SideNavBar */}
       <aside className={`
-        fixed left-0 top-0 h-full w-72 bg-white/80 backdrop-blur-2xl flex flex-col p-6 pt-24 space-y-3 z-50 border-r border-[var(--glass-border)]
+        fixed left-0 top-0 h-full w-72 bg-[rgba(246,243,242,0.86)] backdrop-blur-2xl flex flex-col p-6 pt-24 space-y-3 z-50 shadow-[10px_0_40px_rgba(28,27,27,0.04)]
         transition-transform duration-500 cubic-bezier(0.175, 0.885, 0.32, 1.275)
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:z-30
@@ -185,8 +185,8 @@ export const DashboardLayout: React.FC = () => {
                     onClick={() => setCurrentProject(p)}
                     className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all ${
                       currentProject?.projectId === p.projectId 
-                        ? 'bg-slate-50 text-[var(--color-primary)]' 
-                        : 'text-slate-400 hover:bg-slate-50/50'
+                        ? 'bg-[var(--color-surface-container-lowest)] text-[var(--color-primary)] shadow-[0_12px_28px_rgba(53,37,205,0.08)]' 
+                        : 'text-slate-400 hover:bg-[var(--color-surface-container-lowest)]/75'
                     }`}
                   >
                     <div className={`w-1.5 h-1.5 rounded-full ${currentProject?.projectId === p.projectId ? 'bg-[var(--color-primary)]' : 'bg-slate-200'}`} />
@@ -206,19 +206,19 @@ export const DashboardLayout: React.FC = () => {
           </button>
           
           <div className="grid grid-cols-2 gap-2">
-            <Link to="#" className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl hover:bg-[var(--color-primary)]/5 transition-all group">
+            <button type="button" disabled title="Support is not available yet" className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl opacity-55 cursor-not-allowed">
                 <HelpCircle className="w-5 h-5 text-slate-400 group-hover:text-[var(--color-primary)] transition-colors mb-1" />
                 <span className="text-[9px] font-black uppercase text-slate-500">Support</span>
-            </Link>
-            <Link to="#" className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl hover:bg-[var(--color-primary)]/5 transition-all group">
+            </button>
+            <button type="button" disabled title="Vault is not available yet" className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl opacity-55 cursor-not-allowed">
                 <Archive className="w-5 h-5 text-slate-400 group-hover:text-[var(--color-primary)] transition-colors mb-1" />
                 <span className="text-[9px] font-black uppercase text-slate-500">Vault</span>
-            </Link>
+            </button>
           </div>
           
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-50 font-bold transition-all mt-4 border border-transparent hover:border-rose-100"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-50 font-bold transition-all mt-4"
           >
             <LogOut className="w-5 h-5" />
             <span className="text-[13px] tracking-tight">Terminate Session</span>
@@ -227,7 +227,7 @@ export const DashboardLayout: React.FC = () => {
       </aside>
 
       {/* Main Canvas */}
-      <main className="ml-0 lg:ml-72 pt-24 md:pt-32 p-6 md:p-12 min-h-screen w-full flex-1 overflow-x-hidden bg-[#fcf9f8]/30">
+      <main className="ml-0 lg:ml-72 pt-24 md:pt-32 p-6 md:p-12 min-h-screen w-full flex-1 overflow-x-hidden bg-[var(--color-surface)]">
         <Outlet />
       </main>
 

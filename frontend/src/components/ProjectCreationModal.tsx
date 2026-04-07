@@ -37,10 +37,10 @@ export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-      <div className="w-full max-w-lg bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_40px_100px_rgba(0,0,0,0.2)] overflow-hidden animate-scale-in">
-        <div className="flex items-center justify-between px-8 py-6 border-b border-slate-50">
+      <div className="w-full max-w-lg overflow-hidden rounded-[2.5rem] bg-[var(--color-surface-container-lowest)] shadow-[0_40px_100px_rgba(0,0,0,0.2)] animate-scale-in">
+        <div className="flex items-center justify-between px-8 py-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+            <div className="w-10 h-10 rounded-xl bg-[rgba(53,37,205,0.08)] flex items-center justify-center text-indigo-600">
                <Layout className="w-5 h-5" />
             </div>
             <div>
@@ -51,7 +51,7 @@ export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
           <button 
             type="button" 
             onClick={onClose} 
-            className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all"
+            className="w-10 h-10 rounded-xl flex items-center justify-center bg-[var(--color-surface-container-low)] text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -69,7 +69,7 @@ export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     if (error) clearError();
                     setProjectName(e.target.value);
                   }}
-                  className="w-full rounded-2xl bg-slate-50 px-6 py-4 outline-none border border-transparent focus:border-indigo-500/20 focus:bg-white focus:shadow-inner transition-all font-bold text-slate-700 placeholder:text-slate-300"
+                  className="w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700 placeholder:text-slate-300"
                   placeholder="e.g., Quantum Architecture Phase II"
                   required
                 />
@@ -86,7 +86,7 @@ export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
               </div>
             )}
 
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100/50">
+            <div className="bg-[var(--color-surface-container-low)] rounded-2xl p-4">
                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
                  By initiating a project, you become the <span className="text-indigo-600">Architect</span>. You can then add collaborators by searching for their usernames.
                </p>
@@ -104,7 +104,7 @@ export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
             <button
               type="submit"
               disabled={isLoading || !projectName.trim()}
-              className="flex-1 bg-slate-900 text-white font-black py-4 rounded-2xl shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 text-xs uppercase tracking-widest"
+              className="flex-1 bg-kinetic text-white font-black py-4 rounded-2xl shadow-[0_20px_40px_rgba(53,37,205,0.18)] hover:-translate-y-1 transition-all active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 text-xs uppercase tracking-widest"
             >
               {isLoading ? 'Processing...' : 'Deploy Workspace'}
             </button>

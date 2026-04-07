@@ -11,6 +11,7 @@
   --color-secondary: #58579b;
   --color-on-surface: #1c1b1b;
   --color-on-surface-variant: #464555;
+  --color-outline: rgba(70, 69, 85, 0.42);
   --color-surface-hover: rgba(28, 27, 27, 0.05);
   --color-outline-variant: rgba(199, 196, 216, 0.15);
 
@@ -36,6 +37,9 @@
     background-color: var(--color-surface);
     color: var(--color-on-surface);
     font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 }
 
@@ -82,8 +86,8 @@
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
   &:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 40px 80px rgba(28, 27, 27, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 24px 48px rgba(28, 27, 27, 0.08);
   }
 }
 
@@ -115,3 +119,21 @@
 .delay-400 { animation-delay: 400ms; }
 .delay-500 { animation-delay: 500ms; }
 
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(70, 69, 85, 0.22) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(70, 69, 85, 0.18);
+  border-radius: 999px;
+}
