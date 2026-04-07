@@ -24,65 +24,73 @@ public class ProjectController {
     }
 
     @GetMapping
-    @Operation(description = "Find all projects in the database")
+    @Operation(summary = "Find all projects in the database.")
     public List<Project> findAllProjects(){
         return projectService.findAllProjects();
     }
 
     @GetMapping("/{projectId}")
-    @Operation(description = "Find a specific project based on provided id number")
+    @Operation(summary = "Find a specific project based on provided id number.")
     public Project findProjectById(@PathVariable Integer projectId){
         return projectService.findProjectById(projectId);
     }
 
     @PostMapping
-    @Operation(description = "Save project data")
+    @Operation(summary = "Save project data.")
     public Project saveProject(@RequestBody Project project){
         return projectService.saveProject(project);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(description = "Delete a project based on provided id number")
+    @Operation(summary = "Delete a project based on provided id number.")
     public void deleteProjectById(@PathVariable Integer id){
         projectService.deleteProjectById(id);
     }
 
     @PostMapping("/{projectId}/members")
+    @Operation(summary = "Add a member to the specified project.")
     public ProjectInvitationResponseDTO addMember(@PathVariable Integer projectId, @RequestParam String username, Principal principal) {
         return projectService.addMember(projectId, username, principal.getName());
     }
 
     @GetMapping("/{projectId}/members")
+    @Operation(summary = "Fetch all members of a project.")
     public java.util.Set<User> getMembers(@PathVariable Integer projectId) {
         return projectService.getMembers(projectId);
     }
 
     @DeleteMapping("/{projectId}/members/{userId}")
+    @Operation(summary = "Remove a specified member from the project.")
     public void removeMember(@PathVariable Integer projectId, @PathVariable Integer userId, Principal principal) {
         projectService.removeMember(projectId, userId, principal.getName());
     }
 
     @GetMapping("/user/{userId}")
+    @Operation(summary = "Find all projects associated with a specific user id.")
     public List<Project> findProjectsByUserId(@PathVariable Integer userId) {
         return projectService.findAllProjectsByUserId(userId);
     }
 
     @GetMapping("/{projectId}/invitations")
+    @Operation(summary = "Find all pending invitations for a project.")
     public List<ProjectInvitationResponseDTO> getPendingInvitationsForProject(@PathVariable Integer projectId) {
         return projectService.getPendingInvitationsForProject(projectId);
     }
 
     @GetMapping("/invitations/user/{userId}")
+    @Operation(summary = "Get all pending invitations meant for a user")
     public List<ProjectInvitationResponseDTO> getPendingInvitations(@PathVariable Integer userId) {
         return projectService.getPendingInvitations(userId);
     }
 
     @PostMapping("/invitations/{invitationId}/accept")
+    @Operation(summary = "Accept a specific invitation.")
     public void acceptInvitation(@PathVariable Integer invitationId, Principal principal) {
         projectService.acceptInvitation(invitationId, principal.getName());
     }
 
     @PostMapping("/invitations/{invitationId}/reject")
+    @Operation(summary = "Reject a specific invitation.")
     public void rejectInvitation(@PathVariable Integer invitationId, Principal principal) {
         projectService.rejectInvitation(invitationId, principal.getName());
     }

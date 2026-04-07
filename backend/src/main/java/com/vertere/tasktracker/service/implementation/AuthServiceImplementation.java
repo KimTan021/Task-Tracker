@@ -8,6 +8,7 @@ import com.vertere.tasktracker.security.JwtUtil;
 import com.vertere.tasktracker.service.AuthService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImplementation implements AuthService {
@@ -27,6 +28,20 @@ public class AuthServiceImplementation implements AuthService {
     public User register(User user){
         // Final Fix: Sanitize input to avoid trailing spaces
         if (user.getUserName() != null) user.setUserName(user.getUserName().trim());
+        if (user.getUserEmail() != null) user.setUserEmail(user.getUserEmail().trim());
+
+        if (userRepository.findByUserName(user.getUserName()).isPresent()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.CONFLICT, "Username is already taken."
+            );
+        }
+
+        if (userRepository.findByUserEmail(user.getUserEmail()).isPresent()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.CONFLICT, "Email is already registered."
+            );
+        }
+
         if (user.getUserPassword() != null) {
             String encoded = passwordEncoder.encode(user.getUserPassword().trim());
             user.setUserPassword(encoded);
@@ -36,12 +51,24 @@ public class AuthServiceImplementation implements AuthService {
     }
 
     @Override
+    @Transactional
     public User editUser(Integer userId, User updatedUser){
         User existing = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        existing.setUserName((updatedUser.getUserName()));
-        existing.setUserEmail(updatedUser.getUserEmail());
+        if (updatedUser.getUserName() == null || updatedUser.getUserName().isBlank()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Username cannot be blank."
+            );
+        }
+        if (updatedUser.getUserEmail() == null || updatedUser.getUserEmail().isBlank()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Email cannot be blank."
+            );
+        }
+
+        existing.setUserName(updatedUser.getUserName().trim());
+        existing.setUserEmail(updatedUser.getUserEmail().trim());
 
         if(updatedUser.getUserPassword() != null && !updatedUser.getUserPassword().isBlank()){
             existing.setUserPassword(passwordEncoder.encode(updatedUser.getUserPassword()));

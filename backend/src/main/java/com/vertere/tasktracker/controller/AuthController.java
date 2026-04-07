@@ -34,7 +34,7 @@ public class AuthController {
     }
 
     @PutMapping("/edit/{id}")
-    @Operation(summary = "Edit a user's details")
+    @Operation(summary = "Edit a user's details (Admin only). Can be used to update user details.")
     public User editUser(@PathVariable Integer id, @RequestBody User updatedUser){
         return authService.editUser(id, updatedUser);
     }
