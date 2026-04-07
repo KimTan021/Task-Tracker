@@ -1,22 +1,47 @@
 package com.vertere.tasktracker.service.implementation;
 
+import com.vertere.tasktracker.dto.response.ProjectInvitationResponseDTO;
 import com.vertere.tasktracker.entity.Project;
+import com.vertere.tasktracker.entity.ProjectInvitation;
+import com.vertere.tasktracker.entity.User;
+import com.vertere.tasktracker.repository.ProjectInvitationRepository;
 import com.vertere.tasktracker.repository.ProjectRepository;
+import com.vertere.tasktracker.repository.TaskRepository;
+import com.vertere.tasktracker.repository.UserRepository;
 import com.vertere.tasktracker.service.ProjectService;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Set;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @Transactional
 public class ProjectServiceImplementation implements ProjectService {
     private final ProjectRepository projectRepository;
-    private final com.vertere.tasktracker.repository.UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final ProjectInvitationRepository projectInvitationRepository;
+    private final TaskRepository taskRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public ProjectServiceImplementation(ProjectRepository projectRepository, com.vertere.tasktracker.repository.UserRepository userRepository){
+    public ProjectServiceImplementation(ProjectRepository projectRepository,
+                                        UserRepository userRepository,
+                                        ProjectInvitationRepository projectInvitationRepository,
+                                        TaskRepository taskRepository,
+                                        SimpMessagingTemplate messagingTemplate){
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.projectInvitationRepository = projectInvitationRepository;
+        this.taskRepository = taskRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -31,13 +56,10 @@ public class ProjectServiceImplementation implements ProjectService {
 
     @Override
     public Project saveProject(Project project){
-        // Ensure owner is added as a member and is a managed entity
         if (project.getUser() != null && project.getUser().getUserId() != null) {
-            com.vertere.tasktracker.entity.User managedUser = userRepository.findById(project.getUser().getUserId())
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
+            User managedUser = userRepository.findById(project.getUser().getUserId())
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Owner not found"));
             project.setUser(managedUser);
-            
-            // Fix NPE: Ensure members set is initialized
             if (project.getMembers() == null) {
                 project.setMembers(new java.util.HashSet<>());
             }
@@ -52,14 +74,48 @@ public class ProjectServiceImplementation implements ProjectService {
     }
 
     @Override
-    public void addMember(Integer projectId, String username) {
+    public ProjectInvitationResponseDTO addMember(Integer projectId, String username, String inviterEmail) {
         Project project = projectRepository.findById(projectId)
-            .orElseThrow(() -> new RuntimeException("Project not found"));
-        com.vertere.tasktracker.entity.User user = userRepository.findByUserName(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-        
-        project.getMembers().add(user);
-        projectRepository.save(project);
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Project not found"));
+        User invitedUser = userRepository.findByUserName(username.trim())
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
+        User inviter = userRepository.findByUserEmail(inviterEmail)
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Inviter not found"));
+
+        if (!project.getUser().getUserId().equals(inviter.getUserId())) {
+            throw new ResponseStatusException(FORBIDDEN, "Only the project owner can invite collaborators");
+        }
+        if (project.getUser().getUserId().equals(invitedUser.getUserId())) {
+            throw new ResponseStatusException(BAD_REQUEST, "Project owner is already part of this project");
+        }
+        if (project.getMembers().stream().anyMatch(member -> member.getUserId().equals(invitedUser.getUserId()))) {
+            throw new ResponseStatusException(CONFLICT, "User is already a collaborator");
+        }
+        if (projectInvitationRepository.existsByProject_ProjectIdAndInvitedUser_UserIdAndStatus(projectId, invitedUser.getUserId(), "PENDING")) {
+            throw new ResponseStatusException(CONFLICT, "User already has a pending invite");
+        }
+
+        ProjectInvitation invitation = projectInvitationRepository
+            .findByProject_ProjectIdAndInvitedUser_UserId(projectId, invitedUser.getUserId())
+            .map(existingInvitation -> {
+                existingInvitation.setInvitedBy(inviter);
+                existingInvitation.setStatus("PENDING");
+                existingInvitation.setCreatedAt(java.time.LocalDateTime.now());
+                return existingInvitation;
+            })
+            .orElseGet(() -> ProjectInvitation.builder()
+                .project(project)
+                .invitedUser(invitedUser)
+                .invitedBy(inviter)
+                .status("PENDING")
+                .createdAt(java.time.LocalDateTime.now())
+                .build());
+
+        try {
+            return toInvitationResponse(projectInvitationRepository.save(invitation));
+        } catch (DataIntegrityViolationException exception) {
+            throw new ResponseStatusException(CONFLICT, "User already has a pending invite");
+        }
     }
 
     @Override
@@ -68,9 +124,117 @@ public class ProjectServiceImplementation implements ProjectService {
     }
 
     @Override
-    public java.util.Set<com.vertere.tasktracker.entity.User> getMembers(Integer projectId) {
+    public Set<User> getMembers(Integer projectId) {
         Project project = projectRepository.findById(projectId)
-            .orElseThrow(() -> new RuntimeException("Project not found"));
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Project not found"));
         return project.getMembers();
+    }
+
+    @Override
+    public void removeMember(Integer projectId, Integer userId, String requesterEmail) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Project not found"));
+        User requester = userRepository.findByUserEmail(requesterEmail)
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Requester not found"));
+
+        if (!project.getUser().getUserId().equals(requester.getUserId())) {
+            throw new ResponseStatusException(FORBIDDEN, "Only the project owner can remove collaborators");
+        }
+        if (project.getUser().getUserId().equals(userId)) {
+            throw new ResponseStatusException(BAD_REQUEST, "Project owner cannot be removed");
+        }
+
+        User member = userRepository.findById(userId)
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
+        boolean removed = project.getMembers().removeIf(existingMember -> existingMember.getUserId().equals(userId));
+        if (!removed) {
+            throw new ResponseStatusException(NOT_FOUND, "Collaborator not found in this project");
+        }
+
+        taskRepository.clearAssignmentsForProjectMember(projectId, userId);
+        projectRepository.save(project);
+        broadcastProjectTasksUpdate(project, member.getUserEmail());
+    }
+
+    @Override
+    public List<ProjectInvitationResponseDTO> getPendingInvitations(Integer userId) {
+        return projectInvitationRepository.findAllByInvitedUser_UserIdAndStatusOrderByCreatedAtDesc(userId, "PENDING")
+            .stream()
+            .map(this::toInvitationResponse)
+            .toList();
+    }
+
+    @Override
+    public List<ProjectInvitationResponseDTO> getPendingInvitationsForProject(Integer projectId) {
+        return projectInvitationRepository.findAllByProject_ProjectIdAndStatusOrderByCreatedAtDesc(projectId, "PENDING")
+            .stream()
+            .map(this::toInvitationResponse)
+            .toList();
+    }
+
+    @Override
+    public void acceptInvitation(Integer invitationId, String userEmail) {
+        ProjectInvitation invitation = projectInvitationRepository.findByProjectInvitationIdAndStatus(invitationId, "PENDING")
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Invitation not found"));
+
+        if (!invitation.getInvitedUser().getUserEmail().equals(userEmail)) {
+            throw new ResponseStatusException(FORBIDDEN, "You cannot accept this invitation");
+        }
+
+        Project project = invitation.getProject();
+        if (project.getMembers() == null) {
+            project.setMembers(new java.util.HashSet<>());
+        }
+        project.getMembers().add(invitation.getInvitedUser());
+        projectRepository.save(project);
+
+        invitation.setStatus("ACCEPTED");
+        projectInvitationRepository.save(invitation);
+    }
+
+    @Override
+    public void rejectInvitation(Integer invitationId, String userEmail) {
+        ProjectInvitation invitation = projectInvitationRepository.findByProjectInvitationIdAndStatus(invitationId, "PENDING")
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Invitation not found"));
+
+        if (!invitation.getInvitedUser().getUserEmail().equals(userEmail)) {
+            throw new ResponseStatusException(FORBIDDEN, "You cannot reject this invitation");
+        }
+
+        invitation.setStatus("REJECTED");
+        projectInvitationRepository.save(invitation);
+    }
+
+    private ProjectInvitationResponseDTO toInvitationResponse(ProjectInvitation invitation) {
+        return new ProjectInvitationResponseDTO(
+            invitation.getProjectInvitationId(),
+            invitation.getProject().getProjectId(),
+            invitation.getProject().getProjectName(),
+            invitation.getProject().getProjectDescription(),
+            invitation.getInvitedUser().getUserId(),
+            invitation.getInvitedUser().getUserName(),
+            invitation.getInvitedBy().getUserId(),
+            invitation.getInvitedBy().getUserName(),
+            invitation.getStatus(),
+            invitation.getCreatedAt()
+        );
+    }
+
+    private void broadcastProjectTasksUpdate(Project project, String additionalRecipientEmail) {
+        java.util.Set<String> recipients = new java.util.HashSet<>();
+        if (project.getUser() != null && project.getUser().getUserEmail() != null) {
+            recipients.add(project.getUser().getUserEmail());
+        }
+        if (project.getMembers() != null) {
+            project.getMembers().stream()
+                .map(User::getUserEmail)
+                .filter(java.util.Objects::nonNull)
+                .forEach(recipients::add);
+        }
+        if (additionalRecipientEmail != null && !additionalRecipientEmail.isBlank()) {
+            recipients.add(additionalRecipientEmail);
+        }
+
+        recipients.forEach(email -> messagingTemplate.convertAndSend("/topic/workspace-" + email, "UPDATED"));
     }
 }

@@ -24,6 +24,9 @@ public class Project {
     @Column(name = "project_name", nullable = false)
     private String projectName;
 
+    @Column(name = "project_description")
+    private String projectDescription;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "project_member",

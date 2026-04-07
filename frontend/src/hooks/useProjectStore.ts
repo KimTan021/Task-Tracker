@@ -5,6 +5,7 @@ import api from '../services/api';
 export interface Project {
   projectId: number;
   projectName: string;
+  projectDescription?: string;
   user: {
     userId: number;
     userName: string;
@@ -17,6 +18,19 @@ export interface Project {
   }>;
 }
 
+export interface ProjectInvitation {
+  invitationId: number;
+  projectId: number;
+  projectName: string;
+  projectDescription?: string;
+  invitedUserId: number;
+  invitedUserName: string;
+  invitedByUserId: number;
+  invitedByUserName: string;
+  status: string;
+  createdAt: string;
+}
+
 interface ProjectState {
   projects: Project[];
   currentProject: Project | null;
@@ -24,10 +38,15 @@ interface ProjectState {
   error: string | null;
 
   fetchProjects: (userId: number) => Promise<void>;
-  createProject: (name: string, userId: number) => Promise<Project>;
+  createProject: (name: string, description: string, userId: number) => Promise<Project>;
   setCurrentProject: (project: Project | null) => void;
-  addMember: (projectId: number, username: string) => Promise<void>;
+  addMember: (projectId: number, username: string) => Promise<ProjectInvitation>;
   getMembers: (projectId: number) => Promise<any[]>;
+  removeMember: (projectId: number, userId: number) => Promise<void>;
+  getPendingInvitations: (userId: number) => Promise<ProjectInvitation[]>;
+  getPendingInvitationsForProject: (projectId: number) => Promise<ProjectInvitation[]>;
+  acceptInvitation: (invitationId: number) => Promise<void>;
+  rejectInvitation: (invitationId: number) => Promise<void>;
   reset: () => void;
   clearError: () => void;
 }
@@ -56,11 +75,12 @@ export const useProjectStore = create<ProjectState>()(
         }
       },
 
-      createProject: async (name, userId) => {
+      createProject: async (name, description, userId) => {
         set({ isLoading: true, error: null });
         try {
           const response = await api.post('/api/project', {
             projectName: name,
+            projectDescription: description,
             user: { userId }
           });
           const newProject = response.data;
@@ -86,12 +106,13 @@ export const useProjectStore = create<ProjectState>()(
       addMember: async (projectId, username) => {
         set({ isLoading: true, error: null });
         try {
-          await api.post(`/api/project/${projectId}/members`, null, {
+          const response = await api.post(`/api/project/${projectId}/members`, null, {
             params: { username }
           });
           set({ isLoading: false });
+          return response.data;
         } catch (error: any) {
-          set({ isLoading: false, error: error.response?.data?.message || 'Failed to add member' });
+          set({ isLoading: false, error: error.response?.data?.message || 'Failed to invite member' });
           throw error;
         }
       },
@@ -103,6 +124,59 @@ export const useProjectStore = create<ProjectState>()(
         } catch (error) {
           console.error('Failed to get members', error);
           return [];
+        }
+      },
+
+      removeMember: async (projectId, userId) => {
+        set({ isLoading: true, error: null });
+        try {
+          await api.delete(`/api/project/${projectId}/members/${userId}`);
+          set({ isLoading: false });
+        } catch (error: any) {
+          set({ isLoading: false, error: error.response?.data?.message || 'Failed to remove member' });
+          throw error;
+        }
+      },
+
+      getPendingInvitations: async (userId) => {
+        try {
+          const response = await api.get(`/api/project/invitations/user/${userId}`);
+          return response.data;
+        } catch (error) {
+          console.error('Failed to get pending invitations', error);
+          return [];
+        }
+      },
+
+      getPendingInvitationsForProject: async (projectId) => {
+        try {
+          const response = await api.get(`/api/project/${projectId}/invitations`);
+          return response.data;
+        } catch (error) {
+          console.error('Failed to get project invitations', error);
+          return [];
+        }
+      },
+
+      acceptInvitation: async (invitationId) => {
+        set({ isLoading: true, error: null });
+        try {
+          await api.post(`/api/project/invitations/${invitationId}/accept`);
+          set({ isLoading: false });
+        } catch (error: any) {
+          set({ isLoading: false, error: error.response?.data?.message || 'Failed to accept invitation' });
+          throw error;
+        }
+      },
+
+      rejectInvitation: async (invitationId) => {
+        set({ isLoading: true, error: null });
+        try {
+          await api.post(`/api/project/invitations/${invitationId}/reject`);
+          set({ isLoading: false });
+        } catch (error: any) {
+          set({ isLoading: false, error: error.response?.data?.message || 'Failed to reject invitation' });
+          throw error;
         }
       },
 

@@ -84,7 +84,8 @@ const getTaskMetadata = (task: Record<string, any>, status: Status) => {
 
 const mapDbTaskToUI = (dbTask: Record<string, any>): Task => {
   const status = (dbTask.taskStatus as Status) || 'todo';
-  const assigneeName = dbTask.assigneeName || 'Unassigned';
+  const normalizedAssigneeName = typeof dbTask.assigneeName === 'string' ? dbTask.assigneeName.trim() : '';
+  const assigneeName = normalizedAssigneeName || 'Unassigned';
   const initials = assigneeName
     .split(' ')
     .filter(Boolean)
@@ -100,8 +101,8 @@ const mapDbTaskToUI = (dbTask: Record<string, any>): Task => {
     status,
     priority: (dbTask.taskPriority as Priority) || 'Medium',
     tags: dbTask.taskTags ? dbTask.taskTags.split(',').map((tag: string) => tag.trim()).filter(Boolean) : [],
-    assigneeName,
-    assignees: [{ id: `${dbTask.taskId}-assignee`, name: assigneeName, avatar: initials }],
+    assigneeName: normalizedAssigneeName,
+    assignees: normalizedAssigneeName ? [{ id: `${dbTask.taskId}-assignee`, name: normalizedAssigneeName, avatar: initials }] : [],
     startDate: dbTask.taskStartDate || undefined,
     dueDate: dbTask.taskDateDue || undefined,
     archived: Boolean(dbTask.archived),

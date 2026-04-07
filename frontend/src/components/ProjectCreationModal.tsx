@@ -11,6 +11,7 @@ interface Props {
 
 export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [projectName, setProjectName] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
   const { createProject, isLoading, error, clearError } = useProjectStore();
   const { userId } = useAuthStore();
 
@@ -27,8 +28,9 @@ export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
     if (!projectName.trim() || !userId) return;
 
     try {
-      await createProject(projectName.trim(), userId);
+      await createProject(projectName.trim(), projectDescription.trim(), userId);
       setProjectName('');
+      setProjectDescription('');
       onClose();
     } catch (error) {
       console.error('Failed to create project', error);
@@ -77,6 +79,19 @@ export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   <Sparkles className="w-4 h-4 text-indigo-600" />
                 </div>
               </div>
+            </label>
+
+            <label className="block">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Project Description</span>
+              <textarea
+                value={projectDescription}
+                onChange={(e) => {
+                  if (error) clearError();
+                  setProjectDescription(e.target.value);
+                }}
+                className="mt-2 min-h-[110px] w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-medium text-slate-700 placeholder:text-slate-300 resize-none"
+                placeholder="Summarize the project scope, goals, or what collaborators should expect."
+              />
             </label>
 
             {error && (
