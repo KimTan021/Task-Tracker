@@ -1,12 +1,15 @@
 package com.vertere.tasktracker.controller;
 
+import com.vertere.tasktracker.dto.request.ProjectRequestDTO;
 import com.vertere.tasktracker.dto.response.ProjectInvitationResponseDTO;
 import com.vertere.tasktracker.dto.response.ProjectMemberResponseDTO;
 import com.vertere.tasktracker.entity.Project;
+import com.vertere.tasktracker.entity.User;
 import com.vertere.tasktracker.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -37,7 +40,12 @@ public class ProjectController {
 
     @PostMapping
     @Operation(summary = "Save project data.")
-    public Project saveProject(@RequestBody Project project){
+    public Project saveProject(@Valid @RequestBody ProjectRequestDTO request){
+        Project project = Project.builder()
+            .projectName(request.projectName())
+            .projectDescription(request.projectDescription())
+            .user(User.builder().userId(request.user().userId()).build())
+            .build();
         return projectService.saveProject(project);
     }
 

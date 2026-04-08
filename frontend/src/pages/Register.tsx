@@ -4,12 +4,19 @@ import { useAuthStore } from '../hooks/useAuthStore';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { Mail, Lock, ArrowRight, Rocket, Shield, Cpu, AlertCircle, User, XCircle } from 'lucide-react';
+import { hasErrors, validateRegisterForm } from '../utils/validation';
 
 export const Register: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
   const [localError, setLocalError] = useState<string | null>(null);
   
   const { register, isLoading, error, clearError } = useAuthStore();
@@ -20,15 +27,15 @@ export const Register: React.FC = () => {
     setLocalError(null);
     clearError();
 
-    if (!name || !email || !password || !confirmPassword) return;
-    
-    if (password !== confirmPassword) {
-      setLocalError("Passwords do not match");
+    const nextErrors = validateRegisterForm({ name, email, password, confirmPassword });
+    setFieldErrors(nextErrors);
+    if (hasErrors(nextErrors)) {
+      setLocalError('Please correct the highlighted fields.');
       return;
     }
     
     try {
-      await register(name, email, password);
+      await register(name.trim(), email.trim(), password);
       // Pass a state message to the login page
       navigate('/login', { state: { message: "Registration successful. Please log in." } });
     } catch (err) {
@@ -36,9 +43,14 @@ export const Register: React.FC = () => {
     }
   };
 
-  const handleInputChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange =
+    (field: 'name' | 'email' | 'password' | 'confirmPassword', setter: React.Dispatch<React.SetStateAction<string>>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
     if (error) clearError();
     if (localError) setLocalError(null);
+    if (fieldErrors[field]) {
+      setFieldErrors((current) => ({ ...current, [field]: '' }));
+    }
     setter(e.target.value);
   };
 
@@ -158,7 +170,9 @@ export const Register: React.FC = () => {
                 icon={<User className="w-[18px] h-[18px] opacity-70" />}
                 required
                 value={name}
-                onChange={handleInputChange(setName)}
+                onChange={handleInputChange('name', setName)}
+                error={fieldErrors.name}
+                maxLength={30}
               />
               <p className="mt-2 text-[9px] font-black text-[var(--color-on-surface-variant)]/30 uppercase tracking-widest pl-1">
                 Your unique operative handle.
@@ -173,7 +187,9 @@ export const Register: React.FC = () => {
                 icon={<Mail className="w-[18px] h-[18px] opacity-70" />}
                 required
                 value={email}
-                onChange={handleInputChange(setEmail)}
+                onChange={handleInputChange('email', setEmail)}
+                error={fieldErrors.email}
+                maxLength={255}
               />
             </div>
             
@@ -185,7 +201,9 @@ export const Register: React.FC = () => {
                 icon={<Lock className="w-[18px] h-[18px] opacity-70" />}
                 required 
                 value={password}
-                onChange={handleInputChange(setPassword)}
+                onChange={handleInputChange('password', setPassword)}
+                error={fieldErrors.password}
+                maxLength={72}
               />
             </div>
 
@@ -197,7 +215,9 @@ export const Register: React.FC = () => {
                 icon={<Lock className="w-[18px] h-[18px] opacity-70" />}
                 required 
                 value={confirmPassword}
-                onChange={handleInputChange(setConfirmPassword)}
+                onChange={handleInputChange('confirmPassword', setConfirmPassword)}
+                error={fieldErrors.confirmPassword}
+                maxLength={72}
               />
             </div>
 

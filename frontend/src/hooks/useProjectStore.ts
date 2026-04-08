@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from '../services/api';
+import { getApiErrorMessage } from '../utils/apiError';
 
 export interface Project {
   projectId: number;
@@ -96,7 +97,7 @@ export const useProjectStore = create<ProjectState>()(
         } catch (error: any) {
           set({ 
             isLoading: false, 
-            error: error.response?.data?.message || 'Failed to create project' 
+            error: getApiErrorMessage(error, 'Failed to create project.') 
           });
           throw error;
         }
@@ -122,7 +123,7 @@ export const useProjectStore = create<ProjectState>()(
             };
           });
         } catch (error: any) {
-          set({ isLoading: false, error: error.response?.data?.message || 'Failed to delete project' });
+          set({ isLoading: false, error: getApiErrorMessage(error, 'Failed to delete project.') });
           throw error;
         }
       },
@@ -136,7 +137,7 @@ export const useProjectStore = create<ProjectState>()(
           set({ isLoading: false });
           return response.data;
         } catch (error: any) {
-          set({ isLoading: false, error: error.response?.data?.message || 'Failed to invite member' });
+          set({ isLoading: false, error: getApiErrorMessage(error, 'Failed to invite member.') });
           throw error;
         }
       },
@@ -157,7 +158,7 @@ export const useProjectStore = create<ProjectState>()(
           await api.delete(`/api/project/${projectId}/members/${userId}`);
           set({ isLoading: false });
         } catch (error: any) {
-          set({ isLoading: false, error: error.response?.data?.message || 'Failed to remove member' });
+          set({ isLoading: false, error: getApiErrorMessage(error, 'Failed to remove member.') });
           throw error;
         }
       },
@@ -168,7 +169,7 @@ export const useProjectStore = create<ProjectState>()(
           await api.post(`/api/project/${projectId}/members/${userId}/promote`);
           set({ isLoading: false });
         } catch (error: any) {
-          set({ isLoading: false, error: error.response?.data?.message || 'Failed to promote collaborator' });
+          set({ isLoading: false, error: getApiErrorMessage(error, 'Failed to promote collaborator.') });
           throw error;
         }
       },
@@ -199,7 +200,7 @@ export const useProjectStore = create<ProjectState>()(
           await api.post(`/api/project/invitations/${invitationId}/accept`);
           set({ isLoading: false });
         } catch (error: any) {
-          set({ isLoading: false, error: error.response?.data?.message || 'Failed to accept invitation' });
+          set({ isLoading: false, error: getApiErrorMessage(error, 'Failed to accept invitation.') });
           throw error;
         }
       },
@@ -210,7 +211,7 @@ export const useProjectStore = create<ProjectState>()(
           await api.post(`/api/project/invitations/${invitationId}/reject`);
           set({ isLoading: false });
         } catch (error: any) {
-          set({ isLoading: false, error: error.response?.data?.message || 'Failed to reject invitation' });
+          set({ isLoading: false, error: getApiErrorMessage(error, 'Failed to reject invitation.') });
           throw error;
         }
       },

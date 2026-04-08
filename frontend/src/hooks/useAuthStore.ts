@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from '../services/api';
+import { getApiErrorMessage } from '../utils/apiError';
 
 interface AuthState {
   token: string | null;
@@ -52,7 +53,7 @@ export const useAuthStore = create<AuthState>()(
         } catch (error: any) {
           set({
             isLoading: false,
-            error: error.response?.data?.message || 'Login failed. Please check your credentials.',
+            error: getApiErrorMessage(error, 'Login failed. Please check your credentials.'),
           });
           throw error;
         }
@@ -70,7 +71,7 @@ export const useAuthStore = create<AuthState>()(
         } catch (error: any) {
           set({
             isLoading: false,
-            error: error.response?.data?.message || 'Registration failed. Email may already be in use.',
+            error: getApiErrorMessage(error, 'Registration failed. Please review the form fields and try again.'),
           });
           throw error;
         }

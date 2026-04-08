@@ -26,7 +26,6 @@ public class AuthServiceImplementation implements AuthService {
 
     @Override
     public User register(User user){
-        // Final Fix: Sanitize input to avoid trailing spaces
         if (user.getUserName() != null) user.setUserName(user.getUserName().trim());
         if (user.getUserEmail() != null) user.setUserEmail(user.getUserEmail().trim());
 
@@ -43,7 +42,7 @@ public class AuthServiceImplementation implements AuthService {
         }
 
         if (user.getUserPassword() != null) {
-            String encoded = passwordEncoder.encode(user.getUserPassword().trim());
+            String encoded = passwordEncoder.encode(user.getUserPassword());
             user.setUserPassword(encoded);
         }
         user.setUserRole("ROLE_USER");
@@ -79,9 +78,8 @@ public class AuthServiceImplementation implements AuthService {
 
     @Override
     public LoginResponseDTO login(LoginRequestDTO request) {
-        // Final Fix: Sanitize input to avoid trailing spaces
         String username = request.getUserName() != null ? request.getUserName().trim() : "";
-        String password = request.getUserPassword() != null ? request.getUserPassword().trim() : "";
+        String password = request.getUserPassword() != null ? request.getUserPassword() : "";
 
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED, "User not found"));

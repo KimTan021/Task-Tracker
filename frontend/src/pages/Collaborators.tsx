@@ -5,6 +5,8 @@ import { useProjectStore } from '../hooks/useProjectStore';
 import { useTaskStore } from '../hooks/useTaskStore';
 import { PromoteCollaboratorModal } from '../components/PromoteCollaboratorModal';
 import api from '../services/api';
+import { validateCollaboratorSearch } from '../utils/validation';
+import { getApiErrorMessage } from '../utils/apiError';
 
 interface SearchResult {
   userId: number;
@@ -42,6 +44,8 @@ export const Collaborators: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [pendingProjectInvites, setPendingProjectInvites] = useState<Invitation[]>([]);
   const [pendingUserInvites, setPendingUserInvites] = useState<Invitation[]>([]);
+  const [searchError, setSearchError] = useState('');
+  const [inviteError, setInviteError] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [isAcceptingInvitationId, setIsAcceptingInvitationId] = useState<number | null>(null);
@@ -102,6 +106,13 @@ export const Collaborators: React.FC = () => {
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
+    setInviteError('');
+    const validationMessage = validateCollaboratorSearch(query);
+    setSearchError(validationMessage);
+    if (validationMessage) {
+      setSearchResults([]);
+      return;
+    }
     if (query.length < 2) {
       setSearchResults([]);
       return;
@@ -116,6 +127,7 @@ export const Collaborators: React.FC = () => {
         response.data.filter((user: SearchResult) => !currentMemberIds.has(user.userId) && !pendingInviteIds.has(user.userId))
       );
     } catch (error) {
+      setInviteError(getApiErrorMessage(error, 'Unable to search for collaborators.'));
       console.error('Search failed', error);
     } finally {
       setIsSearching(false);
@@ -125,11 +137,14 @@ export const Collaborators: React.FC = () => {
   const handleAddMember = async (username: string) => {
     if (!currentProject) return;
     try {
+      setInviteError('');
       await addMember(currentProject.projectId, username);
       setSearchQuery('');
+      setSearchError('');
       setSearchResults([]);
       await loadProjectInvites();
     } catch (error: any) {
+      setInviteError(getApiErrorMessage(error, 'Failed to invite collaborator.'));
       if (error?.response?.status === 404) {
         setSearchResults((current) => current.filter((user) => user.userName !== username));
       }
@@ -324,6 +339,12 @@ export const Collaborators: React.FC = () => {
                       {isSearching && <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[var(--color-primary)]" />}
                     </div>
                   ) : null}
+
+                  {(searchError || inviteError) && (
+                    <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3">
+                      <p className="text-xs font-bold text-rose-500">{searchError || inviteError}</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-4">

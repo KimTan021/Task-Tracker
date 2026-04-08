@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { X, User as UserIcon, Check, Search } from 'lucide-react';
-import type { Priority, Status, Task, TaskInput } from '../hooks/useTaskStore';
+import { X, User as UserIcon, Check, Search, AlertCircle } from 'lucide-react';
+import { useTaskStore, type Priority, type Status, type Task, type TaskInput } from '../hooks/useTaskStore';
 import { useProjectStore } from '../hooks/useProjectStore';
+import { hasErrors, validateTaskForm } from '../utils/validation';
 
 type Props = {
   isOpen: boolean;
@@ -22,10 +23,18 @@ const toLocalDateTimeValue = (value?: string) => {
 
 export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialStatus = 'todo', onClose, onSubmit }) => {
   const { currentProject, getMembers } = useProjectStore();
+  const { error: taskError, clearError: clearTaskError } = useTaskStore();
   const [members, setMembers] = useState<any[]>([]);
   const [showAssigneePicker, setShowAssigneePicker] = useState(false);
   const [assigneeQuery, setAssigneeQuery] = useState('');
   const assigneePickerRef = useRef<HTMLDivElement | null>(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    title: '',
+    description: '',
+    startDate: '',
+    dueDate: '',
+    tags: '',
+  });
 
   const [form, setForm] = useState<TaskInput>({
     title: '',
@@ -41,9 +50,10 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
 
   useEffect(() => {
     if (isOpen && currentProject) {
+      clearTaskError();
       void loadMembers();
     }
-  }, [isOpen, currentProject]);
+  }, [isOpen, currentProject, clearTaskError]);
 
   const loadMembers = async () => {
     if (!currentProject) return;
@@ -66,6 +76,13 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
     });
     setAssigneeQuery('');
     setShowAssigneePicker(false);
+    setFieldErrors({
+      title: '',
+      description: '',
+      startDate: '',
+      dueDate: '',
+      tags: '',
+    });
   }, [initialStatus, isOpen, task]);
 
   useEffect(() => {
@@ -98,12 +115,21 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
   if (!isOpen) return null;
 
   const setField = <K extends keyof TaskInput>(key: K, value: TaskInput[K]) => {
+    if (taskError) {
+      clearTaskError();
+    }
+    if (key in fieldErrors) {
+      setFieldErrors((current) => ({ ...current, [key]: '' }));
+    }
     setForm((current) => ({ ...current, [key]: value }));
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!form.title?.trim()) return;
+    const nextErrors = validateTaskForm(form);
+    setFieldErrors(nextErrors);
+    if (hasErrors(nextErrors)) return;
+
     await onSubmit({
       ...form,
       title: form.title.trim(),
@@ -148,10 +174,14 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                 <input 
                     value={form.title} 
                     onChange={(e) => setField('title', e.target.value)} 
-                    className="w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700" 
+                    className={`w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border transition-all font-bold text-slate-700 focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 ${
+                      fieldErrors.title ? 'border-rose-300 bg-rose-50 focus-visible:ring-rose-100' : 'border-transparent'
+                    }`} 
                     placeholder="e.g., Structural Facade Optimization" 
                     required
+                    maxLength={120}
                 />
+                {fieldErrors.title && <p className="text-xs font-bold text-rose-500">{fieldErrors.title}</p>}
               </label>
 
               <label className="space-y-3 md:col-span-2">
@@ -159,9 +189,13 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                 <textarea 
                     value={form.description} 
                     onChange={(e) => setField('description', e.target.value)} 
-                    className="w-full min-h-[120px] rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-medium text-slate-600 resize-none leading-relaxed" 
+                    className={`w-full min-h-[120px] rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border transition-all font-medium text-slate-600 resize-none leading-relaxed focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 ${
+                      fieldErrors.description ? 'border-rose-300 bg-rose-50 focus-visible:ring-rose-100' : 'border-transparent'
+                    }`} 
                     placeholder="Outline the parameters, dependencies, and intended output..." 
+                    maxLength={1000}
                 />
+                {fieldErrors.description && <p className="text-xs font-bold text-rose-500">{fieldErrors.description}</p>}
               </label>
 
               <label className="space-y-3">
@@ -307,9 +341,13 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                 <input 
                     value={(form.tags || []).join(', ')} 
                     onChange={(e) => setField('tags', e.target.value.split(',').map((tag) => tag.trim()).filter(Boolean))} 
-                    className="w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700" 
+                    className={`w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border transition-all font-bold text-slate-700 focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 ${
+                      fieldErrors.tags ? 'border-rose-300 bg-rose-50 focus-visible:ring-rose-100' : 'border-transparent'
+                    }`} 
                     placeholder="tag1, tag2..." 
+                    maxLength={255}
                 />
+                {fieldErrors.tags && <p className="text-xs font-bold text-rose-500">{fieldErrors.tags}</p>}
               </label>
 
               <label className="space-y-3">
@@ -318,8 +356,11 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                     type="datetime-local" 
                     value={form.startDate || ''} 
                     onChange={(e) => setField('startDate', e.target.value)} 
-                    className="w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700" 
+                    className={`w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border transition-all font-bold text-slate-700 focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 ${
+                      fieldErrors.startDate ? 'border-rose-300 bg-rose-50 focus-visible:ring-rose-100' : 'border-transparent'
+                    }`} 
                 />
+                {fieldErrors.startDate && <p className="text-xs font-bold text-rose-500">{fieldErrors.startDate}</p>}
               </label>
 
               <label className="space-y-3">
@@ -328,8 +369,11 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                     type="datetime-local" 
                     value={form.dueDate || ''} 
                     onChange={(e) => setField('dueDate', e.target.value)} 
-                    className="w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700" 
+                    className={`w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border transition-all font-bold text-slate-700 focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 ${
+                      fieldErrors.dueDate ? 'border-rose-300 bg-rose-50 focus-visible:ring-rose-100' : 'border-transparent'
+                    }`} 
                 />
+                {fieldErrors.dueDate && <p className="text-xs font-bold text-rose-500">{fieldErrors.dueDate}</p>}
               </label>
               
               <div className="md:col-span-2 pt-4">
@@ -346,6 +390,13 @@ export const TaskEditorModal: React.FC<Props> = ({ isOpen, mode, task, initialSt
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-[var(--color-on-surface)] transition-colors">Archive Sequence</span>
                 </label>
               </div>
+
+              {taskError && (
+                <div className="md:col-span-2 flex items-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold text-rose-500 animate-fade-in-up">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>{taskError}</span>
+                </div>
+              )}
             </div>
           </div>
 

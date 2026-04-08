@@ -1,5 +1,8 @@
 package com.vertere.tasktracker.dto.request;
 
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -8,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record TaskRequestDTO(
+    @NotNull(message = "Project is required")
     Integer projectId,
 
     @NotBlank(message = "Task title is required")
@@ -17,12 +21,14 @@ public record TaskRequestDTO(
     @Size(max = 1000, message = "Task description must be 1000 characters or fewer")
     String taskDescription,
 
+    @NotBlank(message = "Task status is required")
     @Pattern(regexp = "todo|in_progress|review|completed", message = "Invalid task status")
     String taskStatus,
 
     LocalDateTime taskDateDue,
     LocalDateTime taskStartDate,
 
+    @NotBlank(message = "Task priority is required")
     @Pattern(regexp = "High|Medium|Low", message = "Invalid task priority")
     String taskPriority,
 
@@ -33,4 +39,8 @@ public record TaskRequestDTO(
 
     Boolean archived
 ) {
+    @AssertTrue(message = "Due date must be on or after the start date")
+    public boolean isDateRangeValid() {
+        return taskStartDate == null || taskDateDue == null || !taskDateDue.isBefore(taskStartDate);
+    }
 }

@@ -4,28 +4,37 @@ import { useAuthStore } from '../hooks/useAuthStore';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { User, Lock, ArrowRight, Rocket, Shield, Cpu, AlertCircle, XCircle } from 'lucide-react';
+import { hasErrors, validateLoginForm } from '../utils/validation';
 
 export const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({ username: '', password: '' });
   const { login, isLoading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !password) return;
+    const nextErrors = validateLoginForm({ username, password });
+    setFieldErrors(nextErrors);
+    if (hasErrors(nextErrors)) return;
     
     try {
-      await login(username, password);
+      await login(username.trim(), password);
       navigate('/board');
     } catch (err) {
       // Error is handled in the store, just prevent navigation
     }
   };
 
-  const handleInputChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange =
+    (field: 'username' | 'password', setter: React.Dispatch<React.SetStateAction<string>>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
     if (error) clearError();
+    if (fieldErrors[field]) {
+      setFieldErrors((current) => ({ ...current, [field]: '' }));
+    }
     setter(e.target.value);
   };
 
@@ -155,7 +164,9 @@ export const Login: React.FC = () => {
                 icon={<User className="w-[18px] h-[18px] opacity-70" />}
                 required
                 value={username}
-                onChange={handleInputChange(setUsername)}
+                onChange={handleInputChange('username', setUsername)}
+                error={fieldErrors.username}
+                maxLength={30}
               />
             </div>
             
@@ -172,7 +183,9 @@ export const Login: React.FC = () => {
                 icon={<Lock className="w-[18px] h-[18px] opacity-70" />}
                 required 
                 value={password}
-                onChange={handleInputChange(setPassword)}
+                onChange={handleInputChange('password', setPassword)}
+                error={fieldErrors.password}
+                maxLength={72}
               />
             </div>
 

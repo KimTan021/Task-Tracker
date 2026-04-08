@@ -3,6 +3,7 @@ import { X, Layout, Sparkles, AlertCircle } from 'lucide-react';
 import { useProjectStore } from '../hooks/useProjectStore';
 import { useAuthStore } from '../hooks/useAuthStore';
 import { useEffect } from 'react';
+import { hasErrors, validateProjectForm } from '../utils/validation';
 
 interface Props {
   isOpen: boolean;
@@ -12,12 +13,17 @@ interface Props {
 export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({
+    projectName: '',
+    projectDescription: '',
+  });
   const { createProject, isLoading, error, clearError } = useProjectStore();
   const { userId } = useAuthStore();
 
   useEffect(() => {
     if (isOpen) {
       clearError();
+      setFieldErrors({ projectName: '', projectDescription: '' });
     }
   }, [isOpen, clearError]);
 
@@ -25,7 +31,9 @@ export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!projectName.trim() || !userId) return;
+    const nextErrors = validateProjectForm({ projectName, projectDescription });
+    setFieldErrors(nextErrors);
+    if (hasErrors(nextErrors) || !userId) return;
 
     try {
       await createProject(projectName.trim(), projectDescription.trim(), userId);
@@ -69,16 +77,23 @@ export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   value={projectName}
                   onChange={(e) => {
                     if (error) clearError();
+                    if (fieldErrors.projectName) {
+                      setFieldErrors((current) => ({ ...current, projectName: '' }));
+                    }
                     setProjectName(e.target.value);
                   }}
-                  className="w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-bold text-slate-700 placeholder:text-slate-300"
+                  className={`w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border transition-all font-bold text-slate-700 placeholder:text-slate-300 focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 ${
+                    fieldErrors.projectName ? 'border-rose-300 bg-rose-50 focus-visible:ring-rose-100' : 'border-transparent'
+                  }`}
                   placeholder="e.g., Quantum Architecture Phase II"
                   required
+                  maxLength={120}
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
                   <Sparkles className="w-4 h-4 text-indigo-600" />
                 </div>
               </div>
+              {fieldErrors.projectName && <p className="mt-2 text-xs font-bold text-rose-500">{fieldErrors.projectName}</p>}
             </label>
 
             <label className="block">
@@ -87,11 +102,18 @@ export const ProjectCreationModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 value={projectDescription}
                 onChange={(e) => {
                   if (error) clearError();
+                  if (fieldErrors.projectDescription) {
+                    setFieldErrors((current) => ({ ...current, projectDescription: '' }));
+                  }
                   setProjectDescription(e.target.value);
                 }}
-                className="mt-2 min-h-[110px] w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border border-transparent focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 transition-all font-medium text-slate-700 placeholder:text-slate-300 resize-none"
+                className={`mt-2 min-h-[110px] w-full rounded-2xl bg-[var(--color-surface-container-low)] px-6 py-4 outline-none border transition-all font-medium text-slate-700 placeholder:text-slate-300 resize-none focus:bg-white focus-visible:ring-4 focus-visible:ring-[var(--color-primary)]/10 ${
+                  fieldErrors.projectDescription ? 'border-rose-300 bg-rose-50 focus-visible:ring-rose-100' : 'border-transparent'
+                }`}
                 placeholder="Summarize the project scope, goals, or what collaborators should expect."
+                maxLength={1000}
               />
+              {fieldErrors.projectDescription && <p className="mt-2 text-xs font-bold text-rose-500">{fieldErrors.projectDescription}</p>}
             </label>
 
             {error && (

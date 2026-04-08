@@ -1,5 +1,6 @@
 package com.vertere.tasktracker.controller;
 
+import com.vertere.tasktracker.dto.request.RegisterRequestDTO;
 import com.vertere.tasktracker.dto.request.LoginRequestDTO;
 import com.vertere.tasktracker.dto.response.LoginResponseDTO;
 import com.vertere.tasktracker.entity.User;
@@ -7,6 +8,7 @@ import com.vertere.tasktracker.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,13 +25,18 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
-    public User register(@RequestBody User user){
+    public User register(@Valid @RequestBody RegisterRequestDTO request){
+        User user = User.builder()
+            .userName(request.userName())
+            .userEmail(request.userEmail())
+            .userPassword(request.userPassword())
+            .build();
         return authService.register(user);
     }
 
     @PostMapping("/login")
     @Operation(summary = "Login and receive a JWT token")
-    public LoginResponseDTO login(@RequestBody LoginRequestDTO request){
+    public LoginResponseDTO login(@Valid @RequestBody LoginRequestDTO request){
         return authService.login(request);
     }
 

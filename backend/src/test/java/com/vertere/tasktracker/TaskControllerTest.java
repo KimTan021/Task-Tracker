@@ -138,7 +138,7 @@ class TaskControllerTest {
     @Test
     void TC_004_createTask_validData_returns201WithTask() throws Exception {
         TaskRequestDTO request = new TaskRequestDTO(
-                null,           // projectId
+                1,              // projectId
                 "New Task",     // taskName
                 "Description",  // taskDescription
                 "todo",         // taskStatus
@@ -167,7 +167,7 @@ class TaskControllerTest {
     void TC_005_createTask_missingTitle_returns400() throws Exception {
         // taskName is null — violates @NotBlank
         TaskRequestDTO request = new TaskRequestDTO(
-                null,
+                1,
                 null,           // missing title
                 "Description",
                 "todo",
@@ -204,7 +204,7 @@ class TaskControllerTest {
         updatedTask.setUpdatedAt(LocalDateTime.now());
 
         TaskRequestDTO request = new TaskRequestDTO(
-                null,
+                1,
                 "Updated Task",
                 "Updated description",
                 "in_progress",
@@ -233,7 +233,7 @@ class TaskControllerTest {
     @Test
     void TC_007_updateTask_invalidId_returns404() throws Exception {
         TaskRequestDTO request = new TaskRequestDTO(
-                null,
+                1,
                 "Some Task",
                 null,
                 "todo",
@@ -292,7 +292,7 @@ class TaskControllerTest {
         String longTitle = "A".repeat(121); // exceeds @Size(max = 120)
 
         TaskRequestDTO request = new TaskRequestDTO(
-                null,
+                1,
                 longTitle,
                 "Normal description",
                 "todo",
@@ -316,7 +316,7 @@ class TaskControllerTest {
         String longDescription = "D".repeat(1001); // exceeds @Size(max = 1000)
 
         TaskRequestDTO request = new TaskRequestDTO(
-                null,
+                1,
                 "Valid Title",
                 longDescription,
                 "todo",

@@ -350,11 +350,15 @@ export const KanbanBoard: React.FC = () => {
         }}
         onSubmit={async (input) => {
           if (editingTask) {
-            await updateTask(editingTask.id, input);
-            setEditingTask(null);
+            const updated = await updateTask(editingTask.id, input);
+            if (updated) {
+              setEditingTask(null);
+            }
           } else {
-            await createTask({ ...input, status: input.status || createStatus });
-            setIsCreating(false);
+            const created = await createTask({ ...input, status: input.status || createStatus });
+            if (created) {
+              setIsCreating(false);
+            }
           }
         }}
       />

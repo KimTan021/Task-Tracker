@@ -92,7 +92,18 @@ public class ProjectServiceImplementation implements ProjectService {
     public ProjectInvitationResponseDTO addMember(Integer projectId, String username, String inviterEmail) {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Project not found"));
-        User invitedUser = userRepository.findByUserName(username.trim())
+        String normalizedUsername = username == null ? "" : username.trim();
+        if (normalizedUsername.isBlank()) {
+            throw new ResponseStatusException(BAD_REQUEST, "Username is required");
+        }
+        if (normalizedUsername.length() < 3 || normalizedUsername.length() > 30) {
+            throw new ResponseStatusException(BAD_REQUEST, "Username must be between 3 and 30 characters");
+        }
+        if (!normalizedUsername.matches("^[A-Za-z0-9._-]+$")) {
+            throw new ResponseStatusException(BAD_REQUEST, "Username may only contain letters, numbers, periods, underscores, and hyphens");
+        }
+
+        User invitedUser = userRepository.findByUserName(normalizedUsername)
             .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
         User inviter = userRepository.findByUserEmail(inviterEmail)
             .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Inviter not found"));

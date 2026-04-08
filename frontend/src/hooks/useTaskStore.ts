@@ -4,6 +4,7 @@ import SockJS from 'sockjs-client';
 import api from '../services/api';
 import { useAuthStore } from './useAuthStore';
 import { useProjectStore } from './useProjectStore';
+import { getApiErrorMessage } from '../utils/apiError';
 
 export type Priority = 'High' | 'Medium' | 'Low';
 export type Status = 'todo' | 'in_progress' | 'review' | 'completed';
@@ -192,7 +193,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         .map(mapDbTaskToUI);
       set({ tasks, isLoading: false });
     } catch (error: any) {
-      set({ isLoading: false, error: error.response?.data?.message || error.message || 'Failed to load tasks.' });
+      set({ isLoading: false, error: getApiErrorMessage(error, 'Failed to load tasks.') });
     }
   },
 
@@ -215,7 +216,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       set((state) => ({ tasks: [...state.tasks, created], isLoading: false }));
       return created;
     } catch (error: any) {
-      set({ isLoading: false, error: error.response?.data?.message || 'Failed to create task.' });
+      set({ isLoading: false, error: getApiErrorMessage(error, 'Failed to create task.') });
       return null;
     }
   },
@@ -230,7 +231,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       set((state) => ({ tasks: state.tasks.map((task) => task.id === id ? updated : task) }));
       return updated;
     } catch (error: any) {
-      set({ error: error.response?.data?.message || 'Failed to update task.' });
+      set({ error: getApiErrorMessage(error, 'Failed to update task.') });
       return null;
     }
   },
