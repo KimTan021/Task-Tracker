@@ -83,7 +83,8 @@ public class ProjectServiceImplementation implements ProjectService {
             throw new ResponseStatusException(FORBIDDEN, "Only the project owner can delete this project");
         }
 
-        projectRepository.deleteById(projectId);
+        taskRepository.deleteByProject_ProjectId(projectId);
+        projectRepository.delete(project);
         broadcastProjectTasksUpdate(project, null);
     }
 
